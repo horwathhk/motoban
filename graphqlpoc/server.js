@@ -1,12 +1,13 @@
 const express = require("express");
 const GraphQLHTTP = require("express-graphql");
 const app = express();
-const schema = require("./data/schema.js");
+const router = express.Router();
+const users = require("./data/users.js");
 
 app.use(
-  "/graphql",
+  "/users",
   GraphQLHTTP({
-    schema: schema,
+    schema: users,
     graphiql: true
   })
 );
@@ -16,6 +17,8 @@ app.get("/", (req, res) => {
     .status(200)
     .send({ message: "YAY! Congratulations! Your first endpoint is working" });
 });
+
+//user routes
 
 app.listen(3000);
 console.log("app running on port ", 3000);
