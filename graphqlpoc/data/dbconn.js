@@ -5,4 +5,3 @@ const db = {};
 db.conn = pgp(connectionString);
 
 module.exports = db;
-  

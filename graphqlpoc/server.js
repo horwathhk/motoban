@@ -5,6 +5,10 @@ const router = express.Router();
 const users = require("./data/users.js");
 const bikes = require("./data/bikes.js");
 const motobanSchema = require("./data/motoban.js");
+const cors = require("cors");
+
+//allow cross-origin request
+app.use(cors());
 
 app.use(
   "/users",
@@ -38,5 +42,5 @@ app.get("/", (req, res) => {
 
 //user routes
 
-app.listen(3000);
-console.log("app running on port ", 3000);
+app.listen(4000);
+console.log("app running on port ", 4000);
