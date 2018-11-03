@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { gql } from "apollo-boost";
 import { graphql, compose } from "react-apollo";
+import classnames from "classnames";
 import { getUsersQuery, addUserMutation } from "../../queries/queries";
 
 //components
@@ -11,58 +12,64 @@ class Register extends Component {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      errors: {
+        username: false,
+        password: false
+      },
+      touched: {
+        username: false,
+        password: false
+      }
     };
   }
 
   submitForm(e) {
-    // let i;
-    // let info = this.props.addUserMutation;
-    let data = this.props.getUsersQuery;
     e.preventDefault();
-    // console.log(this.state);
-
-    data.users.map(user => {
-      if (user.username === e.target.username.value) {
-        console.log("match");
-        console.log(e.target.value);
-        return false;
-      } else {
-        console.log("no match");
-        console.log(e.target.value);
-
-        this.props.addUserMutation({
-          variables: {
-            username: this.state.username,
-            password: this.state.password
-          }
-        });
-      }
-      this.props.history.push("/dashboard");
-
-      // console.log("mapping" + user.username);
-
-      //verification
-      // for (i = 0; i < data.users.length; i++) {
-      //   if (!info.username) {
-      //     //add danger class
-      //     console.log("nope!");
-      //   } else {
-      //     console.log("mutation" + info.username);
-      //     console.log("query" + data.users.username);
-      //   }
-      // }
+    //submit with verification by checking state
+    let data = this.props.getUsersQuery.users;
+    let info = data.map(user => {
+      return user.username;
     });
+    console.log("target" + e.target.username.value);
+    console.log(info);
+
+    if (info.includes(e.target.username.value)) {
+      alert("doesn't work");
+    } else {
+      this.props.history.push("/dashboard");
+    }
   }
+
+  validate(username, password) {
+    // true means invalid, so our conditions got reversed
+    return {
+      username: username.length === 0,
+      password: password.length === 0
+    };
+  }
+  handleBlur = field => evt => {
+    this.setState({
+      touched: { ...this.state.touched, [field]: true }
+    });
+  };
   render() {
-    console.log(this.props);
     //ononchange is fired every keystroke
+
+    const errors = this.validate(this.state.username, this.state.password);
+
+    const shouldMarkError = field => {
+      const hasError = errors[field];
+      const shouldShow = this.state.touched[field];
+      return hasError ? shouldShow : false;
+    };
+
     return (
       <div className="login">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Register</h1>
+              <h1 className="display-4 text-center">Create an Account</h1>
               <p className="lead text-center">
                 Create an Account to Post or Rent a Motorbike
               </p>
@@ -71,18 +78,25 @@ class Register extends Component {
                   placeholder="Username"
                   name="username"
                   type="username"
-                  // onChange={e => this.setState({ username: e.target.value })}
                   onChange={e => this.setState({ username: e.target.value })}
-                  // error={errors.email}
+                  className={shouldMarkError("username") ? "error" : ""}
+                  onBlur={this.handleBlur("username")}
+                  error={errors.username}
                 />
                 <TextFieldGroup
                   placeholder="Password"
                   name="password"
                   type="password"
                   onChange={e => this.setState({ password: e.target.value })}
-                  // error={errors.email}
+                  error={errors.password}
+                  className={shouldMarkError("password") ? "error" : ""}
+                  onBlur={this.handleBlur("password")}
                 />
-                <input type="submit" className="btn btn-info btn-block mt-4" />
+                <input
+                  // disabled={!isEnabled}
+                  type="submit"
+                  className="btn btn-info btn-block mt-4"
+                />
               </form>
             </div>
           </div>
