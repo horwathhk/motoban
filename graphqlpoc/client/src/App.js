@@ -12,6 +12,7 @@ import Navbar from "./components/layout/Navbar";
 import Landing from "./components/layout/Landing";
 import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
+import Login from "./components/auth/Login";
 import Dashboard from "./components/common/dashboard/dashboard";
 
 //apollo client setup
@@ -32,6 +33,12 @@ class App extends Component {
               exact
               path="/register"
               component={Register}
+              // props={AddUser}
+            />
+            <Route
+              exact
+              path="/login"
+              component={Login}
               // props={AddUser}
             />
             <Route
