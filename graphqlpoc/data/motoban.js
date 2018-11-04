@@ -49,13 +49,22 @@ let BikeType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
   name: "MotobanSchema",
   fields: {
+
     user: {
       type: UserType,
-      args: { user_id: { type: GraphQLID } },
+      args: { 
+        user_id: { type: GraphQLID },
+        username: { type: GraphQLString } 
+        },
       resolve(parentValue, args) {
-        const query = `SELECT * FROM public."users" WHERE user_id=${
-          args.user_id
-        }`;
+        console.log(args)
+        let query = '';
+        if (args.user_id) {
+            query = 'SELECT * FROM public."users" WHERE user_id=' + args.user_id;
+        } else if (args.username) {
+            query = 'SELECT * FROM public."users" WHERE username=\'' + args.username + '\'';
+        }
+        console.log(query)
         return db.conn
           .one(query)
           .then(data => {
@@ -66,6 +75,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
+
     users: {
       type: new GraphQLList(UserType),
       resolve(parentValue, args) {
@@ -80,6 +90,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
+
     addUser: {
       type: UserType,
       args: {
@@ -102,6 +113,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
+
     bike: {
       type: BikeType,
       args: { bike_id: { type: GraphQLID } },
@@ -119,6 +131,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
+
     bikes: {
       type: new GraphQLList(BikeType),
       args: { id: { type: GraphQLID } },
@@ -138,6 +151,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
+
     bikesOfUser: {
       type: new GraphQLList(BikeType),
       args: { user_id: { type: GraphQLID } },
