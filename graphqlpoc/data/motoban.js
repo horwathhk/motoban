@@ -1,5 +1,6 @@
 const graphql = require("graphql");
 const db = require("./dbconn.js");
+const bcrypt = require("bcrypt");
 
 const {
   GraphQLObjectType,
@@ -49,22 +50,24 @@ let BikeType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
   name: "MotobanSchema",
   fields: {
-
     user: {
       type: UserType,
-      args: { 
+      args: {
         user_id: { type: GraphQLID },
-        username: { type: GraphQLString } 
-        },
+        username: { type: GraphQLString }
+      },
       resolve(parentValue, args) {
-        console.log(args)
-        let query = '';
+        console.log(args);
+        let query = "";
         if (args.user_id) {
-            query = 'SELECT * FROM public."users" WHERE user_id=' + args.user_id;
+          query = 'SELECT * FROM public."users" WHERE user_id=' + args.user_id;
         } else if (args.username) {
-            query = 'SELECT * FROM public."users" WHERE username=\'' + args.username + '\'';
+          query =
+            'SELECT * FROM public."users" WHERE username=\'' +
+            args.username +
+            "'";
         }
-        console.log(query)
+        console.log(query);
         return db.conn
           .one(query)
           .then(data => {
@@ -185,21 +188,54 @@ const mutation = new GraphQLObjectType({
         // id: { type: new GraphQLNonNull(GraphQLID) },
         username: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) }
-        // pin: { type: new GraphQLNonNull(GraphQLInt) }
       },
       resolve(parentValue, args) {
-        return db.conn
-          .any(
-            'INSERT INTO public."users"(username, password) VALUES($1, $2)',
-            [`${args.username}`, `${args.password}`]
-          )
-          .then(() => {
-            return "success";
-            // success;
-          })
-          .catch(err => {
-            return "the error is", err;
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(args.password, salt, (err, hash) => {
+            args.password = hash;
+            return db.conn
+              .any(
+                'INSERT INTO public."users"(username, password) VALUES($1, $2)',
+                [`${args.username}`, `${args.password}`]
+              )
+              .then(() => {
+                return "success";
+                // success;
+              })
+              .catch(err => {
+                return "the error is", err;
+              });
           });
+        });
+      }
+    },
+    signin: {
+      type: UserType,
+      args: {
+        username: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      resolve(parentValue, args) {
+        console.log(args);
+        let query = "";
+        if (args.username && args.password) {
+          query =
+            'SELECT * FROM public."users" WHERE username=\'' +
+            args.username +
+            "'" +
+            "AND password='" +
+            args.password +
+            "'";
+          console.log(query);
+          return db.conn
+            .one(query)
+            .then(data => {
+              return data;
+            })
+            .catch(err => {
+              return "The error is", err;
+            });
+        }
       }
     },
     addBikeToUser: {
