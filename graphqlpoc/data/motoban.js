@@ -1,6 +1,8 @@
 const graphql = require("graphql");
 const db = require("./dbconn.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 
 const {
   GraphQLObjectType,
@@ -14,7 +16,7 @@ const {
 } = graphql;
 
 let UserType = new GraphQLObjectType({
-  name: "user",
+  name: "User",
   fields: () => ({
     user_id: { type: GraphQLID },
     username: { type: GraphQLString },
@@ -78,7 +80,26 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-
+    me: {
+      type: UserType,
+      args: null,
+      resolve: (parentValue, args, { user }) => {
+        console.log(args);
+        let query = "";
+        if (user) {
+          query = 'SELECT * FROM public."users" WHERE user_id=' + args.user_id;
+        }
+        console.log(query);
+        return db.conn
+          .one(query)
+          .then(data => {
+            return "you are in your profile!" + data;
+          })
+          .catch(err => {
+            return "not loggin in", err;
+          });
+      }
+    },
     users: {
       type: new GraphQLList(UserType),
       resolve(parentValue, args) {
@@ -102,17 +123,20 @@ const RootQuery = new GraphQLObjectType({
         password: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve(parentValue, args) {
+        let user =
+          'INSERT INTO public."users" WHERE username=\'' +
+          args.username +
+          "'" +
+          "AND password='" +
+          args.password +
+          "'";
         return db.conn
-          .any(
-            'INSERT INTO public."users"(username, password) VALUES($1, $2)',
-            [`${args.username}`, `${args.password}`]
-          )
-          .then(() => {
-            return "success";
-            // success;
+          .any(query)
+          .then(data => {
+            return data;
           })
           .catch(err => {
-            return "the error is", err;
+            return "The error is", err;
           });
       }
     },
@@ -193,17 +217,20 @@ const mutation = new GraphQLObjectType({
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(args.password, salt, (err, hash) => {
             args.password = hash;
+            let user =
+              'INSERT INTO public."users" WHERE username=\'' +
+              args.username +
+              "'" +
+              "AND password='" +
+              args.password +
+              "'";
             return db.conn
-              .any(
-                'INSERT INTO public."users"(username, password) VALUES($1, $2)',
-                [`${args.username}`, `${args.password}`]
-              )
-              .then(() => {
-                return "success";
-                // success;
+              .any(user)
+              .then(data => {
+                return data;
               })
               .catch(err => {
-                return "the error is", err;
+                return "The error is", err;
               });
           });
         });
@@ -215,27 +242,33 @@ const mutation = new GraphQLObjectType({
         username: { type: GraphQLString },
         password: { type: GraphQLString }
       },
-      resolve(parentValue, args) {
-        console.log(args);
-        let query = "";
-        if (args.username && args.password) {
-          query =
-            'SELECT * FROM public."users" WHERE username=\'' +
-            args.username +
-            "'" +
-            "AND password='" +
-            args.password +
-            "'";
-          console.log(query);
-          return db.conn
-            .one(query)
-            .then(data => {
-              return data;
-            })
-            .catch(err => {
-              return "The error is", err;
-            });
-        }
+      resolve: async (parentValue, args, { SECRET }) => {
+        //we need to make an API call, get the data back, and then use it
+        let user =
+          'SELECT * FROM public."users" WHERE username=\'' +
+          args.username +
+          "'" +
+          "AND password='" +
+          args.password +
+          "'";
+
+        // let user = `{args.username}` + `{args.password}`;
+        console.log("consolled!" + user);
+
+        const token = jwt.sign(
+          {
+            user: _.pick(user, ["id", "username"])
+          },
+          SECRET,
+          {
+            expiresIn: "36000"
+          }
+        );
+        console.log("token!" + token);
+        console.log("successful signin!");
+        console.log("user " + user);
+
+        return token;
       }
     },
     addBikeToUser: {

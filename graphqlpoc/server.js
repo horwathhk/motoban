@@ -6,9 +6,33 @@ const users = require("./data/users.js");
 const bikes = require("./data/bikes.js");
 const motobanSchema = require("./data/motoban.js");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
+const SECRET = "billybobthorton";
+
+//jwt.verify isn't recieving the jwt token
+const addUser = async req => {
+  const token = req.headers.authorization;
+  console.log("this is recieved " + token);
+  try {
+    const { user } = await jwt.verify(token, SECRET);
+    req.user = user;
+    console.log("this is user in server.js" + user);
+  } catch (err) {
+    console.log(err);
+  }
+  req.next();
+};
 //allow cross-origin request
 app.use(cors());
+app.use(addUser);
+
+app.use(
+  "/graphiql",
+  GraphQLHTTP({
+    endpointURL: "/graphql"
+  })
+);
 
 app.use(
   "/users",
@@ -28,10 +52,14 @@ app.use(
 
 app.use(
   "/motoban",
-  GraphQLHTTP({
+  GraphQLHTTP(req => ({
     schema: motobanSchema,
-    graphiql: true
-  })
+    graphiql: true,
+    context: {
+      SECRET,
+      user: req.user
+    }
+  }))
 );
 
 app.get("/", (req, res) => {

@@ -46,6 +46,7 @@ class Login extends Component {
         username: this.state.username,
         password: this.state.password
       }
+      // this.props.getUsersQuery
     });
     console.log("success!");
     // this.props.history.push("/dashboard");

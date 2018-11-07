@@ -14,6 +14,7 @@ import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/common/dashboard/dashboard";
+import Home from "./components/common/home/Home";
 
 //apollo client setup
 const client = new ApolloClient({
@@ -45,6 +46,12 @@ class App extends Component {
               exact
               path="/dashboard"
               component={Dashboard}
+              // props={AddUser}
+            />
+            <Route
+              exact
+              path="/home"
+              component={Home}
               // props={AddUser}
             />
             <Footer />
