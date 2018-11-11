@@ -23,6 +23,7 @@
     "lodash.pick": "^4.4.0",
     "pg": "^7.5.0",
     "pg-promise": "^8.5.1",
-    "react-apollo": "^2.2.4"
+    "react-apollo": "^2.2.4",
+    "sequelize": "^4.41.1"
   }
 }

@@ -239,36 +239,32 @@ const mutation = new GraphQLObjectType({
     signin: {
       type: UserType,
       args: {
+        user_id: { type: GraphQLID },
         username: { type: GraphQLString },
         password: { type: GraphQLString }
       },
-      resolve: async (parentValue, args, { SECRET }) => {
-        //we need to make an API call, get the data back, and then use it
-        let user =
+      resolve(parentValue, args, { SECRET }) {
+        let query =
           'SELECT * FROM public."users" WHERE username=\'' +
           args.username +
           "'" +
           "AND password='" +
           args.password +
           "'";
-
-        // let user = `{args.username}` + `{args.password}`;
-        console.log("consolled!" + user);
-
-        const token = jwt.sign(
-          {
-            user: _.pick(user, ["id", "username"])
-          },
-          SECRET,
-          {
-            expiresIn: "36000"
-          }
-        );
-        console.log("token!" + token);
-        console.log("successful signin!");
-        console.log("user " + user);
-
-        return token;
+        return db.conn.any(query).then(user => {
+          // console.log(data[0].username);
+          let token = jwt.sign(
+            {
+              user: [user[0].user_id, user[0].username]
+            },
+            SECRET,
+            {
+              expiresIn: "36000"
+            }
+          );
+          console.log("token " + token);
+          return token;
+        });
       }
     },
     addBikeToUser: {

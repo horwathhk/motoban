@@ -15,9 +15,13 @@ const addUser = async req => {
   const token = req.headers.authorization;
   console.log("this is recieved " + token);
   try {
-    const { user } = await jwt.verify(token, SECRET);
+    const tokenArray = token.split(".");
+    const selectedArray = tokenArray.slice(0, 3);
+    const realtoken = selectedArray.join(".");
+    console.log("token beingused " + realtoken);
+    const { user } = await jwt.verify(realtoken, SECRET);
     req.user = user;
-    console.log("this is user in server.js" + user);
+    console.log("this is user in server.js " + user);
   } catch (err) {
     console.log(err);
   }
