@@ -59,7 +59,7 @@ const RootQuery = new GraphQLObjectType({
         username: { type: GraphQLString }
       },
       resolve(parentValue, args) {
-        console.log(args);
+        console.log("args from user" + args);
         let query = "";
         if (args.user_id) {
           query = 'SELECT * FROM public."users" WHERE user_id=' + args.user_id;
@@ -73,6 +73,7 @@ const RootQuery = new GraphQLObjectType({
         return db.conn
           .one(query)
           .then(data => {
+            console.log("data from promise in me" + data);
             return data;
           })
           .catch(err => {
@@ -83,17 +84,25 @@ const RootQuery = new GraphQLObjectType({
     me: {
       type: UserType,
       args: null,
-      resolve: (parentValue, args, { user }) => {
-        console.log(args);
+      resolve(parentValue, args, context, { user }) {
+        console.log(context.user);
+        let currentUser = context.user;
+        console.log(currentUser.user_id);
+        // let users = user.user_id;
+        // console.log(user);
         let query = "";
-        if (user) {
-          query = 'SELECT * FROM public."users" WHERE user_id=' + args.user_id;
+        if (currentUser) {
+          query =
+            'SELECT * FROM public."users" WHERE user_id=' + currentUser.user_id;
+          console.log(currentUser);
+        } else {
+          console.log("not logged in");
         }
-        console.log(query);
         return db.conn
           .one(query)
           .then(data => {
-            return "you are in your profile!" + data;
+            console.log("data" + data);
+            return data;
           })
           .catch(err => {
             return "not loggin in", err;
@@ -239,11 +248,20 @@ const mutation = new GraphQLObjectType({
     signin: {
       type: UserType,
       args: {
-        user_id: { type: GraphQLID },
         username: { type: GraphQLString },
         password: { type: GraphQLString }
       },
       resolve(parentValue, args, { SECRET }) {
+        //we are searching all which I think is returning it as an array of objects. We need user to be a single object
+
+        // let query =
+        //   'SELECT row_to_json(t) FROM ( SELECT username, password FROM public."users" WHERE username=\'' +
+        //   args.username +
+        //   "'" +
+        //   "AND password='" +
+        //   args.password +
+        //   "') t";
+        // console.log(query);
         let query =
           'SELECT * FROM public."users" WHERE username=\'' +
           args.username +
@@ -251,15 +269,17 @@ const mutation = new GraphQLObjectType({
           "AND password='" +
           args.password +
           "'";
-        return db.conn.any(query).then(user => {
-          // console.log(data[0].username);
+        return db.conn.one(query).then(user => {
+          console.log(query);
+          console.log(user);
+          // console.log("user at sign in " + user.user_id + user.username);
           let token = jwt.sign(
             {
-              user: [user[0].user_id, user[0].username]
+              user: _.pick(user, ["user_id", "username"])
             },
             SECRET,
             {
-              expiresIn: "36000"
+              expiresIn: "36000000000"
             }
           );
           console.log("token " + token);
