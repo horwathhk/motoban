@@ -21,7 +21,15 @@ let UserType = new GraphQLObjectType({
     user_id: { type: GraphQLID },
     username: { type: GraphQLString },
     password: { type: GraphQLString },
+    token: { type: GraphQLString },
     bikes: { type: GraphQLList(BikeType) }
+  })
+});
+let LoginResponse = new GraphQLObjectType({
+  name: "LoginResponse",
+  fields: () => ({
+    ok: { type: GraphQLBoolean },
+    token: { type: GraphQLString }
   })
 });
 
@@ -81,7 +89,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-    me: {
+    currentUser: {
       type: UserType,
       args: null,
       resolve(parentValue, args, context, { user }) {
@@ -252,16 +260,6 @@ const mutation = new GraphQLObjectType({
         password: { type: GraphQLString }
       },
       resolve(parentValue, args, { SECRET }) {
-        //we are searching all which I think is returning it as an array of objects. We need user to be a single object
-
-        // let query =
-        //   'SELECT row_to_json(t) FROM ( SELECT username, password FROM public."users" WHERE username=\'' +
-        //   args.username +
-        //   "'" +
-        //   "AND password='" +
-        //   args.password +
-        //   "') t";
-        // console.log(query);
         let query =
           'SELECT * FROM public."users" WHERE username=\'' +
           args.username +
@@ -279,11 +277,12 @@ const mutation = new GraphQLObjectType({
             },
             SECRET,
             {
-              expiresIn: "36000000000"
+              expiresIn: "7d"
             }
           );
           console.log("token " + token);
-          return token;
+          user.token = token;
+          return user;
         });
       }
     },

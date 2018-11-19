@@ -1,3 +1,8 @@
+//https://www.youtube.com/watch?v=-VgeUqpPTh4&index=10&list=PLN3n1USn4xlkdRlq3VZ1sT6SGW0-yajjL
+//https://www.youtube.com/watch?v=07uyIZMqgJM
+//https://www.youtube.com/watch?v=7C3rPbXmm44
+// https://www.udemy.com/mern-stack-front-to-back/learn/v4/t/lecture/10055368?start=7 private route traversey
+
 import React, { Component } from "react";
 import { gql } from "apollo-boost";
 import { graphql, compose } from "react-apollo";
@@ -5,7 +10,8 @@ import classnames from "classnames";
 import {
   getUsersQuery,
   addUserMutation,
-  signinMutation
+  signinMutation,
+  getCurrentUserQuery
 } from "../../queries/queries";
 
 //components
@@ -27,30 +33,23 @@ class Login extends Component {
       // }
     };
   }
-
-  submitForm(e) {
+  submitForm = async e => {
     e.preventDefault();
-    //submit with verification by checking state
-    // let data = this.props.getUsersQuery.users;
-    // let info = data.map(user => {
-    //   return user.username;
-    // });
-    // console.log("target" + e.target.username.value);
-    // console.log(info);
-    // //NEED TO ADD DON'T ALLOW EMPTY PASSWORD
-    // if (info.includes(e.target.username.value)) {
-    //   alert("doesn't work");
-    // } else {
-    this.props.signinMutation({
-      variables: {
-        username: this.state.username,
-        password: this.state.password
-      }
-      // this.props.getUsersQuery
+    const { username, password } = this.state;
+    const response = await this.props.signinMutation({
+      variables: { username, password }
     });
-    console.log("success!");
-    // this.props.history.push("/dashboard");
-  }
+    console.log(response);
+    const { token } = response.data.signin;
+    localStorage.setItem("token", token);
+
+    this.props.history.push("/dashboard");
+  };
+
+  //ccheck skype I sent a screenshot of the object we are getting
+  // console.log(response);
+  // localStorage.setItem("token", token);
+  // this.props.history.push("/dashboard");
 
   // validate(username, password) {
   //   // true means invalid, so our conditions got reversed
@@ -118,4 +117,5 @@ export default compose(
   graphql(getUsersQuery, { name: "getUsersQuery" }),
   graphql(signinMutation, { name: "signinMutation" }),
   graphql(addUserMutation, { name: "addUserMutation" })
+  // graphql(getCurrentUserQuery, { name: "getCurrentUserQuery" })
 )(Login);

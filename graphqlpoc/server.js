@@ -23,6 +23,8 @@ const addUser = async req => {
     console.log("token being used " + realtoken);
     let { user } = await jwt.verify(realtoken, SECRET);
     req.user = user;
+    localStorage.setItem("token", realtoken);
+    localStorage.setItem("userId", user.user_id);
     // let users = user.user_id;
     // console.log("user" + "" + user.username + " " + user.user_id);
     // console.log("users " + users);
@@ -33,7 +35,7 @@ const addUser = async req => {
   req.next();
 };
 //allow cross-origin request
-app.use(cors());
+app.use("*", cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(addUser);
 app.use(bodyParserGraphQL());
 // app.use(bodyParser.json());

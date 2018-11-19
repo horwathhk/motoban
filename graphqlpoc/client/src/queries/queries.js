@@ -8,6 +8,14 @@ const getUsersQuery = gql`
   }
 `;
 
+const getCurrentUserQuery = gql`
+  {
+    currentUser {
+      username
+    }
+  }
+`;
+
 const getUserQuery = gql`
   {
     user {
@@ -21,6 +29,7 @@ const signinMutation = gql`
     signin(username: $username, password: $password) {
       username
       password
+      token
     }
   }
 `;
@@ -34,4 +43,10 @@ const addUserMutation = gql`
   }
 `;
 
-export { getUsersQuery, getUserQuery, addUserMutation, signinMutation };
+export {
+  getUsersQuery,
+  getUserQuery,
+  getCurrentUserQuery,
+  addUserMutation,
+  signinMutation
+};
