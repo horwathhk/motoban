@@ -25,11 +25,13 @@ let UserType = new GraphQLObjectType({
     bikes: { type: GraphQLList(BikeType) }
   })
 });
-let LoginResponse = new GraphQLObjectType({
+let SigninResponseType = new GraphQLObjectType({
   name: "LoginResponse",
   fields: () => ({
     ok: { type: GraphQLBoolean },
-    token: { type: GraphQLString }
+    token: { type: GraphQLString },
+    user_id: { type: GraphQLID },
+    username: { type: GraphQLString }
   })
 });
 
@@ -254,7 +256,7 @@ const mutation = new GraphQLObjectType({
       }
     },
     signin: {
-      type: UserType,
+      type: SigninResponseType,
       args: {
         username: { type: GraphQLString },
         password: { type: GraphQLString }
