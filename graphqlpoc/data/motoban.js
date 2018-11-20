@@ -26,12 +26,33 @@ let UserType = new GraphQLObjectType({
   })
 });
 let SigninResponseType = new GraphQLObjectType({
-  name: "LoginResponse",
+  name: "SigninResponse",
   fields: () => ({
     ok: { type: GraphQLBoolean },
     token: { type: GraphQLString },
     user_id: { type: GraphQLID },
     username: { type: GraphQLString }
+  })
+});
+
+let UserProfileType = new GraphQLObjectType({
+  name: "UserProfile",
+  fields: () => ({
+    user_id: { type: GraphQLID },
+    username: { type: GraphQLString },
+    email: { type: GraphQLString },
+    first_name: { type: GraphQLString },
+    last_name: { type: GraphQLString },
+    phone: { type: GraphQLString },
+    // bikes_id_fkey: { type: GraphQLList },
+    bike_id: { type: GraphQLInt },
+    maker: { type: GraphQLString },
+    model: { type: GraphQLString },
+    year: { type: GraphQLInt },
+    model: { type: GraphQLString },
+    description: { type: GraphQLString },
+    condition: { type: GraphQLString },
+    transmission: { type: GraphQLInt }
   })
 });
 
@@ -133,24 +154,19 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-
-    addUser: {
-      type: UserType,
+    getUserProfile: {
+      type: UserProfileType,
       args: {
         // id: { type: new GraphQLNonNull(GraphQLID) },
-        username: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString) }
+        user_id: { type: new GraphQLNonNull(GraphQLInt) }
       },
       resolve(parentValue, args) {
-        let user =
-          'INSERT INTO public."users" WHERE username=\'' +
-          args.username +
-          "'" +
-          "AND password='" +
-          args.password +
-          "'";
+        const query = `SELECT * FROM public.users u INNER JOIN public.user_details ud ON u.user_id = ud.users_id_fkey INNER JOIN public.bikes b ON  b.user_id_fkey = u.user_id INNER JOIN public.bikes_descriptions bd ON bd.bikes_id_fkey = b.bike_id WHERE u.user_id=${
+          args.user_id
+        } `;
+
         return db.conn
-          .any(query)
+          .one(query)
           .then(data => {
             return data;
           })
