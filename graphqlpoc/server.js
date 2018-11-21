@@ -23,8 +23,6 @@ const addUser = async req => {
     console.log("token being used " + realtoken);
     let { user } = await jwt.verify(realtoken, SECRET);
     req.user = user;
-    localStorage.setItem("token", realtoken);
-    localStorage.setItem("userId", user.user_id);
     // let users = user.user_id;
     // console.log("user" + "" + user.username + " " + user.user_id);
     // console.log("users " + users);
@@ -34,6 +32,27 @@ const addUser = async req => {
   }
   req.next();
 };
+//WORKING
+//   const token = req.headers.authorization;
+//   console.log("this is recieved " + token);
+//   try {
+//     const tokenArray = token.split(".");
+//     const selectedArray = tokenArray.slice(0, 3);
+//     const realtoken = selectedArray.join(".");
+//     console.log("token being used " + realtoken);
+//     let { user } = await jwt.verify(realtoken, SECRET);
+//     req.user = user;
+//     localStorage.setItem("token", realtoken);
+//     localStorage.setItem("userId", user.user_id);
+//     // let users = user.user_id;
+//     // console.log("user" + "" + user.username + " " + user.user_id);
+//     // console.log("users " + users);
+//     console.log(user);
+//   } catch (err) {
+//     console.log("err" + err + token);
+//   }
+//   req.next();
+// };
 //allow cross-origin request
 app.use("*", cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(addUser);

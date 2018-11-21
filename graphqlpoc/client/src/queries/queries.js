@@ -11,7 +11,9 @@ const getUsersQuery = gql`
 const getCurrentUserQuery = gql`
   {
     currentUser {
+      user_id
       username
+      token
     }
   }
 `;

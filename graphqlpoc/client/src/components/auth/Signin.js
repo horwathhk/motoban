@@ -17,7 +17,7 @@ import {
 //components
 import TextFieldGroup from "../common/edit-profile/TextFieldGroup";
 
-class Login extends Component {
+class Signin extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,6 +42,7 @@ class Login extends Component {
     console.log(response);
     const { token } = response.data.signin;
     localStorage.setItem("token", token);
+    console.log(this.props.getCurrentUserQuery);
 
     this.props.history.push("/dashboard");
   };
@@ -116,6 +117,6 @@ class Login extends Component {
 export default compose(
   graphql(getUsersQuery, { name: "getUsersQuery" }),
   graphql(signinMutation, { name: "signinMutation" }),
-  graphql(addUserMutation, { name: "addUserMutation" })
-  // graphql(getCurrentUserQuery, { name: "getCurrentUserQuery" })
-)(Login);
+  graphql(addUserMutation, { name: "addUserMutation" }),
+  graphql(getCurrentUserQuery, { name: "getCurrentUserQuery" })
+)(Signin);

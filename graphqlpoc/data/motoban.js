@@ -272,7 +272,7 @@ const mutation = new GraphQLObjectType({
       }
     },
     signin: {
-      type: SigninResponseType,
+      type: UserType,
       args: {
         username: { type: GraphQLString },
         password: { type: GraphQLString }
