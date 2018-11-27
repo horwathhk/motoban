@@ -26,6 +26,21 @@ const getUserQuery = gql`
   }
 `;
 
+const getBikesQuery = gql`
+  {
+    bikes {
+      bike_id
+      users_id_fkey
+      bikes_id_fkey
+      maker
+      model
+      year
+      description
+      condition
+    }
+  }
+`;
+
 const signinMutation = gql`
   mutation($username: String!, $password: String!) {
     signin(username: $username, password: $password) {
@@ -49,6 +64,7 @@ export {
   getUsersQuery,
   getUserQuery,
   getCurrentUserQuery,
+  getBikesQuery,
   addUserMutation,
   signinMutation
 };

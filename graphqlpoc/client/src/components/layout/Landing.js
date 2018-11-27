@@ -2,10 +2,18 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import { connect } from "react-redux";
+import { Button } from "reactstrap";
+
 import TextFieldGroup from "../common/edit-profile/TextFieldGroup";
+import Navbar from "./Navbar/Navbar";
+
+const text = {
+  color: "black"
+};
 
 const cardBody = {
-  height: "35rem"
+  height: "27rem",
+  width: "25rem"
 };
 
 const title = {
@@ -37,17 +45,18 @@ export default class Landing extends Component {
     return (
       <div className="landing">
         <div className="dark-overlay landing-inner text-light">
+          <Navbar />
           <div className="container">
             <div className="row">
               <div className="col-md-12 text-left">
-                <h1 className="display-3 mb-4">Motoban</h1>
-                <p className="lead"> Bring On The Open Road.</p>
-                <div style={cardBody} class="card w-50">
-                  <div class="card-body">
+                <h1 className="display-3 mb-4">Motobay</h1>
+                <p className="lead"> Effortless Motorbike Rentals</p>
+                <div style={cardBody} class="card">
+                  <div className="card-body">
                     <h5 style={title} class="card-title">
                       Find a Ride. Start Your Journey.
                     </h5>
-                    <h4>Where</h4>
+                    {/* <p style={text}>Where</p> */}
                     <TextFieldGroup
                       placeholder="Where"
                       name="Where"
@@ -71,9 +80,18 @@ export default class Landing extends Component {
                       onChange={this.onChange}
                       // error={errors.from}
                     />
-                    <a href="#" class="btn btn-secondary">
-                      Button
-                    </a>
+
+                    <Link
+                      style={{
+                        backgroundColor: "gray",
+                        width: "8rem",
+                        color: "white"
+                      }}
+                      className="nav-link"
+                      to="/home"
+                    >
+                      Search Bikes
+                    </Link>
                   </div>
                 </div>
               </div>

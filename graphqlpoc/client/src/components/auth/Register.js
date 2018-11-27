@@ -44,7 +44,7 @@ class Register extends Component {
         }
       });
       console.log("success!");
-      // this.props.history.push("/dashboard");
+      this.props.history.push("/signin");
     }
   }
 

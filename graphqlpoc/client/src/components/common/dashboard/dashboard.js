@@ -20,18 +20,32 @@ class Dashboard extends Component {
     };
   }
 
-  componentDidMount() {
-    let user;
-    let userName;
-    console.log("data from dashboard");
-    user = this.props.getCurrentUserQuery.currentUser;
-    userName = user.username;
-    console.log(userName);
-    this.setState({ username: userName });
+  componentDidUpdate() {
+    let currentUser = this.props.getCurrentUserQuery.currentUser;
+    let userName = currentUser.username;
+    console.log(currentUser.username);
+    if (this.state.username === "") {
+      this.setState({ username: userName });
+    } else {
+      return this.state.username;
+    }
   }
+  //   // let user;
+  //   // let userName;
+  //   // console.log("data from dashboard");
+  //   // user = this.props.getCurrentUserQuery.currentUser;
+  //   // console.log("from dashboard");
+  //   // console.log(user);
+  //   // userName = user.username;
+  //   // console.log(userName);
+  //   // this.setState({ username: userName });
+  // }
 
   render() {
-    let username = this.state.username;
+    let { username } = this.state;
+
+    // let currentUser = this.props.getCurrentUserQuery.currentUser;
+    // console.log(currentUser);
     return (
       <div>
         <h1>{username}'s Dashboard</h1>

@@ -6,7 +6,7 @@ import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { Provider } from "react-redux";
-
+import { withRouter } from "react-router";
 import ApolloClient from "apollo-client";
 import { ApolloProvider } from "react-apollo";
 import { HttpLink } from "apollo-link-http";
@@ -15,13 +15,13 @@ import { HttpLink } from "apollo-link-http";
 import { ApolloLink, concat } from "apollo-link";
 
 //components
-import Navbar from "./components/layout/Navbar";
 import Landing from "./components/layout/Landing";
 import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Signin from "./components/auth/Signin";
+import SigninModule from "./components/layout/Navbar/SignInModal";
 import Dashboard from "./components/common/dashboard/Dashboard";
-import Bikes from "./components/common/bikes/Bikes";
+import Home from "./components/common/bikes/Home";
 //https://www.apollographql.com/docs/react/advanced/network-layer.html
 //https://www.apollographql.com/docs/react/recipes/authentication.html
 //https://www.youtube.com/watch?v=sK9SjEjlz6U&index=12&list=PLN3n1USn4xlkdRlq3VZ1sT6SGW0-yajjL
@@ -97,7 +97,6 @@ class App extends Component {
       <ApolloProvider client={client}>
         <Router>
           <div className="App">
-            <Navbar />
             <Route exact path="/" component={Landing} />
             <div className="container" />
             <Route
@@ -106,22 +105,13 @@ class App extends Component {
               component={Register}
               // props={AddUser}
             />
+            <Route exact path="/signin" component={Signin} />
+            <Route exact path="/signin" component={SigninModule} />
+            <Route exact path="/dashboard" component={Dashboard} />
             <Route
               exact
-              path="/signin"
-              component={Signin}
-              // props={AddUser}
-            />
-            <Route
-              exact
-              path="/dashboard"
-              component={Dashboard}
-              // props={AddUser}
-            />
-            <Route
-              exact
-              path="/bikes"
-              component={Bikes}
+              path="/home"
+              component={Home}
               // props={AddUser}
             />
             <Footer />
