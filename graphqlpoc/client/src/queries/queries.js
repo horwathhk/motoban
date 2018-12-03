@@ -37,6 +37,7 @@ const getBikesQuery = gql`
       year
       description
       condition
+      bike_price
     }
   }
 `;

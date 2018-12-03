@@ -30,8 +30,9 @@ const rowBuffer = {
 export default class BikeItem extends Component {
   render() {
     const { bike } = this.props;
+    console.log({ bike });
     return (
-      <div>
+      <div style={{ marginTop: "30px" }}>
         <Col>
           <Card style={{ height: "350px", width: "300px" }}>
             <CardImg
@@ -42,6 +43,7 @@ export default class BikeItem extends Component {
             />
             <CardBody>
               <CardTitle>{bike.model}</CardTitle>
+              <CardSubtitle>{bike.bike_price}/per day</CardSubtitle>
               <CardSubtitle>{bike.condition}</CardSubtitle>
               <CardText>{bike.description}</CardText>
               {/* <Button>See More</Button> */}

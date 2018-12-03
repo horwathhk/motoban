@@ -66,7 +66,11 @@ let BikeType = new GraphQLObjectType({
     model: { type: GraphQLString },
     year: { type: GraphQLInt },
     description: { type: GraphQLString },
-    condition: { type: GraphQLString }
+    condition: { type: GraphQLString },
+    transmission: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    bike_price: { type: GraphQLInt },
+    maker: { type: GraphQLString }
   })
 });
 let BikeDescriptionType = new GraphQLObjectType({
@@ -221,6 +225,7 @@ const RootQuery = new GraphQLObjectType({
         return db.conn
           .any(query)
           .then(data => {
+            console.log(data);
             return data;
           })
           .catch(err => {

@@ -22,7 +22,7 @@ const button = {
   marginTop: "10px"
 };
 
-class FilterModule extends React.Component {
+class SortByModule extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -156,4 +156,4 @@ class FilterModule extends React.Component {
   }
 }
 
-export default FilterModule;
+export default SortByModule;

@@ -6,6 +6,7 @@ import {
   addBikeDescriptionMutation
 } from "../../../queries/queries";
 import { graphql, compose } from "react-apollo";
+import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 
 class ListYourBike extends Component {
   constructor(props) {
@@ -154,65 +155,71 @@ class ListYourBike extends Component {
     console.log({ year });
     return (
       <div>
-        <container>
-          <NavBar />
-          <div>
-            <h1>{this.state.user_id}</h1>
-            <h1>{this.state.bikes_id_fkey}</h1>
-          </div>
-          <form onSubmit={this.submitForm.bind(this)}>
-            <div className="form-group">
-              <label id="exampleFormControlInput1">Maker</label>
-              <input
-                type="text"
-                className="form-control"
-                id="location"
-                placeholder="City Name"
-                onChange={e => this.setState({ maker: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label id="exampleFormControlInput1">Model</label>
-              <input
-                type="text"
-                className="form-control"
-                id="location"
-                placeholder="City Name"
-                onChange={e => this.setState({ model: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label id="exampleFormControlInput1">Year</label>
-              <input
-                type="text"
-                step="1"
-                className="form-control"
-                id="location"
-                placeholder="City Name"
-                onChange={e => this.setState({ year: Number(e.target.value) })}
-              />
-            </div>
-            <div className="form-group">
-              <label id="exampleFormControlInput1">description</label>
-              <input
-                type="text"
-                className="form-control"
-                id="location"
-                placeholder="City Name"
-                onChange={e => this.setState({ description: e.target.value })}
-              />
-              <div className="form-group">
-                <label for="exampleFormControlInput1">condition</label>
-                <input
+        <NavBar />
+        <div className="row">
+          <div className="col-md-5 m-auto">
+            <br />
+            <h1 className="display-4 text-center">List a Bike</h1>
+            <p className="text-center">
+              To list a bike on the market place, fill in the information about
+              your bike below.
+            </p>
+            <Form onSubmit={this.submitForm.bind(this)}>
+              <FormGroup>
+                <Label id="exampleFormControlInput1">Maker</Label>
+                <Input
+                  type="text"
+                  className="form-control"
+                  id="location"
+                  placeholder="City Name"
+                  onChange={e => this.setState({ maker: e.target.value })}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label id="exampleFormControlInput1">Model</Label>
+                <Input
+                  type="text"
+                  className="form-control"
+                  id="location"
+                  placeholder="City Name"
+                  onChange={e => this.setState({ model: e.target.value })}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label id="exampleFormControlInput1">Year</Label>
+                <Input
+                  type="text"
+                  step="1"
+                  className="form-control"
+                  id="location"
+                  placeholder="City Name"
+                  onChange={e =>
+                    this.setState({ year: Number(e.target.value) })
+                  }
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label id="exampleFormControlInput1">description</Label>
+                <Input
+                  type="text"
+                  className="form-control"
+                  id="location"
+                  placeholder="City Name"
+                  onChange={e => this.setState({ description: e.target.value })}
+                />
+              </FormGroup>
+              <FormGroup className="form-group">
+                <Label for="exampleFormControlInput1">condition</Label>
+                <Input
                   type="location"
                   className="form-control"
                   id="location"
                   placeholder="City Name"
                   onChange={e => this.setState({ condition: e.target.value })}
                 />
-              </div>
-              <div className="form-group">
-                <label for="exampleFormControlInput1">transmission</label>
+              </FormGroup>
+              <FormGroup className="form-group">
+                <Label for="exampleFormControlInput1">transmission</Label>
                 <input
                   type="text"
                   className="form-control"
@@ -222,20 +229,20 @@ class ListYourBike extends Component {
                     this.setState({ transmission: Number(e.target.value) })
                   }
                 />
-              </div>
-              <div className="form-group">
-                <label for="exampleFormControlInput1">Locations</label>
-                <input
+              </FormGroup>
+              <FormGroup className="form-group">
+                <Label for="exampleFormControlInput1">Locations</Label>
+                <Input
                   type="text"
                   className="form-control"
                   id="location"
                   placeholder="City Name"
                   onChange={e => this.setState({ location: e.target.value })}
                 />
-              </div>
-              <div className="form-group">
-                <label for="exampleFormControlInput1">Price Per Day</label>
-                <input
+              </FormGroup>
+              <FormGroup className="form-group">
+                <Label for="exampleFormControlInput1">Price Per Day</Label>
+                <Input
                   type="location"
                   className="form-control"
                   id="location"
@@ -244,15 +251,17 @@ class ListYourBike extends Component {
                     this.setState({ bike_price: Number(e.target.value) })
                   }
                 />
-              </div>
-              <input
-                // disabled={!isEnabled}
-                type="submit"
-                classNameName="btn btn-info btn-block mt-4"
-              />
-            </div>
-          </form>
-        </container>
+              </FormGroup>
+              <FormGroup>
+                <Input
+                  // disabled={!isEnabled}
+                  type="submit"
+                  classNameName="btn btn-info btn-block mt-4"
+                />
+              </FormGroup>
+            </Form>
+          </div>
+        </div>
       </div>
     );
   }

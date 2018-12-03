@@ -14,7 +14,7 @@ import {
   Row,
   Col
 } from "reactstrap";
-import FilterModule from "./FilterModule";
+import SortByModule from "./FilterModule";
 import PriceModule from "./PriceModule";
 import OtherFiltersModule from "./OtherFiltersModule";
 
@@ -54,7 +54,7 @@ class Filter extends React.Component {
       <div>
         <Row>
           <Col>
-            <FilterModule />
+            <SortByModule />
           </Col>
           <Col>
             <PriceModule />

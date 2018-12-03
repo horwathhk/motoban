@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import bike1 from "../../../../image/bike1.png";
+import aaron from "../../../../image/aaron.jpg";
 
 import {
   Dropdown,
@@ -26,12 +26,27 @@ export default class DropDown extends Component {
 
   render() {
     return (
-      <Dropdown isOpen={this.state.dropdownOpen} onMouseEnter={this.toggle}>
-        <DropdownToggle
-          style={{ height: "80px", width: "80px" }}
+      <Dropdown
+        style={{ marginTop: "-30px" }}
+        isOpen={this.state.dropdownOpen}
+        onMouseEnter={this.toggle}
+      >
+        <img
           className="rounded-circle"
+          style={{
+            marginTop: "0px",
+            marginRight: "0px",
+            height: "30px",
+            width: "30px",
+            boarderColor: "white"
+          }}
+          src={aaron}
+        />
+        <DropdownToggle
+          style={{ backgroundColor: "transparent", border: "none" }}
           caret
         />
+
         <DropdownMenu>
           <DropdownItem>
             <Link to="/list-your-bike">List A Bike </Link>

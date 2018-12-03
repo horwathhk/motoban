@@ -18,41 +18,43 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
+  Col
 } from "reactstrap";
 
 const text = {
-  color: "#f6ffec"
+  color: "#f6ffec",
+  marginTop: "-30"
 };
 
 const navbar = {
-  background: "#76a2b2"
+  background: "#3b2722",
+  width: "100%"
 };
 
 const first = {
   marginRight: "2rem",
   marginLeft: "5rem",
-  marginTop: "13px",
+
   width: "15rem"
 };
 
 const second = {
   marginRight: "2rem",
   marginLeft: "2rem",
-  marginTop: "13px",
+
   width: "15rem"
 };
 
 const third = {
   marginRight: "2rem",
   marginLeft: "2rem",
-  marginTop: "13px",
   width: "15rem"
 };
 
 const dropDown = {
   marginLeft: "20rem",
-  marginTop: "35px"
+  marginTop: "30px"
 };
 
 class SearchBikes extends Component {
@@ -69,46 +71,71 @@ class SearchBikes extends Component {
     return (
       <div>
         <Navbar style={navbar} light expand="md">
-          <NavbarBrand style={text} href="/">
-            Motoban
-          </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="mr-auto" navbar>
+              <NavbarBrand row style={text} href="/">
+                Motoban
+              </NavbarBrand>
               <NavItem style={first}>
-                <FormGroup>
-                  <Label style={{ color: "#f6ffec" }} for="where">
+                <FormGroup row>
+                  <Label sm={2} style={{ color: "#f6ffec" }} for="where">
                     Where
                   </Label>
-                  <input
-                    class="form-control form-control-sm"
-                    type="text"
-                    placeholder="where"
-                  />
+                  <Col sm={10}>
+                    <input
+                      style={{
+                        border: "0",
+                        outline: "0",
+                        background: "transparent",
+                        borderBottom: "1px solid #f6ffec"
+                      }}
+                      class="form-control form-control-sm"
+                      type="text"
+                      placeholder="Enter a City"
+                    />
+                  </Col>
                 </FormGroup>
               </NavItem>
               <NavItem style={second}>
-                <FormGroup>
-                  <Label style={{ color: "#f6ffec" }} for="from">
+                <FormGroup row>
+                  <Label sm={2} style={{ color: "#f6ffec" }} for="from">
                     From
                   </Label>
-                  <input
-                    class="form-control form-control-sm"
-                    type="date"
-                    placeholder="from"
-                  />
+                  <Col sm={10}>
+                    <input
+                      style={{
+                        border: "0",
+                        outline: "0",
+                        background: "transparent",
+                        borderBottom: "1px solid #f6ffec",
+                        color: "#f6ffrc"
+                      }}
+                      class="form-control form-control-sm"
+                      type="date"
+                      placeholder="from"
+                    />
+                  </Col>
                 </FormGroup>
               </NavItem>
               <NavItem style={third}>
-                <FormGroup>
-                  <Label style={{ color: "#f6ffec" }} for="until">
+                <FormGroup row>
+                  <Label sm={2} style={{ color: "#f6ffec" }} for="until">
                     Until
                   </Label>
-                  <input
-                    class="form-control form-control-sm"
-                    type="date"
-                    placeholder="until"
-                  />
+                  <Col sm={10}>
+                    <input
+                      style={{
+                        border: "0",
+                        outline: "0",
+                        background: "transparent",
+                        borderBottom: "1px solid #f6ffec"
+                      }}
+                      class="form-control form-control-sm"
+                      type="date"
+                      placeholder="until"
+                    />
+                  </Col>
                 </FormGroup>
               </NavItem>
               <NavItem style={dropDown}>
