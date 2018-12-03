@@ -30,7 +30,7 @@ const getBikesQuery = gql`
   {
     bikes {
       bike_id
-      users_id_fkey
+      user_id_fkey
       bikes_id_fkey
       maker
       model
@@ -60,11 +60,58 @@ const addUserMutation = gql`
   }
 `;
 
+const addBikeToUserMutation = gql`
+  mutation($user_id_fkey: Int!) {
+    addBikeToUser(user_id_fkey: $user_id_fkey) {
+      user_id_fkey
+      bike_id
+    }
+  }
+`;
+
+const addBikeDescriptionMutation = gql`
+  mutation(
+    $bikes_id_fkey: Int!
+    $maker: String!
+    $year: Int!
+    $description: String!
+    $condition: String!
+    $transmission: Int!
+    $location: String!
+    $bike_price: Int!
+    $model: String!
+  ) {
+    addBikeDescription(
+      bikes_id_fkey: $bikes_id_fkey
+      maker: $maker
+      year: $year
+      description: $description
+      condition: $condition
+      transmission: $transmission
+      location: $location
+      bike_price: $bike_price
+      model: $model
+    ) {
+      bikes_id_fkey
+      maker
+      year
+      description
+      condition
+      transmission
+      location
+      bike_price
+      model
+    }
+  }
+`;
+
 export {
   getUsersQuery,
   getUserQuery,
   getCurrentUserQuery,
   getBikesQuery,
   addUserMutation,
-  signinMutation
+  signinMutation,
+  addBikeToUserMutation,
+  addBikeDescriptionMutation
 };

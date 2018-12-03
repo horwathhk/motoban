@@ -60,13 +60,27 @@ let BikeType = new GraphQLObjectType({
   name: "bike",
   fields: () => ({
     bike_id: { type: GraphQLID },
-    users_id_fkey: { type: GraphQLInt },
+    user_id_fkey: { type: GraphQLInt },
     bikes_id_fkey: { type: GraphQLInt },
     maker: { type: GraphQLString },
     model: { type: GraphQLString },
     year: { type: GraphQLInt },
     description: { type: GraphQLString },
     condition: { type: GraphQLString }
+  })
+});
+let BikeDescriptionType = new GraphQLObjectType({
+  name: "bikeDescription",
+  fields: () => ({
+    bikes_id_fkey: { type: GraphQLInt },
+    maker: { type: GraphQLString },
+    model: { type: GraphQLString },
+    year: { type: GraphQLInt },
+    description: { type: GraphQLString },
+    condition: { type: GraphQLString },
+    transmission: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    bike_price: { type: GraphQLInt }
   })
 });
 
@@ -116,6 +130,7 @@ const RootQuery = new GraphQLObjectType({
       type: UserType,
       args: null,
       resolve(parentValue, args, context, { user }) {
+        console.log("context");
         console.log(context.user);
         let currentUser = context.user;
         console.log(currentUser.user_id);
@@ -132,7 +147,7 @@ const RootQuery = new GraphQLObjectType({
         return db.conn
           .one(query)
           .then(data => {
-            console.log("data" + data);
+            console.log(data);
             return data;
           })
           .catch(err => {
@@ -244,33 +259,41 @@ const mutation = new GraphQLObjectType({
     addUser: {
       type: UserType,
       args: {
-        // id: { type: new GraphQLNonNull(GraphQLID) },
+        id: { type: GraphQLID },
         username: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) }
       },
-      resolve(parentValue, args) {
+      resolve(parentValue, args, { SECRET }) {
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(args.password, salt, (err, hash) => {
             args.password = hash;
-            let user =
-              'INSERT INTO public."users" WHERE username=\'' +
-              args.username +
-              "'" +
-              "AND password='" +
-              args.password +
-              "'";
+            // let query =
             return db.conn
-              .any(user)
-              .then(data => {
-                return data;
-              })
-              .catch(err => {
-                return "The error is", err;
+              .any(
+                'INSERT INTO public."users"(username, password) VALUES($1, $2)',
+                [`${args.username}`, `${args.password}`]
+              )
+              .then(user => {
+                console.log(user);
+                // console.log("user at sign in " + user.user_id + user.username);
+                let token = jwt.sign(
+                  {
+                    user: _.pick(user, ["user_id", "username"])
+                  },
+                  SECRET,
+                  {
+                    expiresIn: "7d"
+                  }
+                );
+                console.log(token);
+                user.token = token;
+                return user;
               });
           });
         });
       }
     },
+
     signin: {
       type: UserType,
       args: {
@@ -281,14 +304,24 @@ const mutation = new GraphQLObjectType({
         let query =
           'SELECT * FROM public."users" WHERE username=\'' +
           args.username +
-          "'" +
-          "AND password='" +
-          args.password +
           "'";
+        // +
+        // "AND password='" +
+        // args.password +
+        // "'";
+
         return db.conn.one(query).then(user => {
           console.log(query);
-          console.log(user);
+          console.log("user.password");
+          console.log(user.password);
+          console.log(user.user_id);
           // console.log("user at sign in " + user.user_id + user.username);
+          const valid = bcrypt.compare(args.password, user.password);
+          if (!valid) {
+            throw new Error("incorrect password");
+          } else {
+            console.log("valid!");
+          }
           let token = jwt.sign(
             {
               user: _.pick(user, ["user_id", "username"])
@@ -307,32 +340,68 @@ const mutation = new GraphQLObjectType({
     addBikeToUser: {
       type: BikeType,
       args: {
-        // id: { type: new GraphQLNonNull(GraphQLID) },
-        users_id_fkey: { type: new GraphQLNonNull(GraphQLInt) },
-        bikes_id_fkey: { type: new GraphQLNonNull(GraphQLInt) },
-        maker: { type: new GraphQLNonNull(GraphQLString) },
-        model: { type: new GraphQLNonNull(GraphQLString) },
-        year: { type: new GraphQLNonNull(GraphQLInt) },
-        description: { type: new GraphQLNonNull(GraphQLString) },
-        condition: { type: new GraphQLNonNull(GraphQLString) }
+        id: { type: GraphQLID },
+        user_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
+        // bikes_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
+        // maker: { type: new GraphQLNonNull(GraphQLString) },
+        // model: { type: new GraphQLNonNull(GraphQLString) },
+        // year: { type: new GraphQLNonNull(GraphQLInt) },
+        // description: { type: new GraphQLNonNull(GraphQLString) },
+        // condition: { type: new GraphQLNonNull(GraphQLString) },
+        // transmission: { type: new GraphQLNonNull(GraphQLInt) },
+        // location: { type: new GraphQLNonNull(GraphQLString) },
+        // star_rating: { type: new GraphQLNonNull(GraphQLInt) },
+        // bike_price: { type: new GraphQLNonNull(GraphQLInt) }
       },
       resolve(parentValue, args) {
         return db.conn
           .any(
             `INSERT INTO public."bikes"
-            (users_id_fkey) VALUES($1)`,
-            [`${args.users_id_fkey}`]
+            (user_id_fkey) VALUES($1) RETURNING bike_id`,
+            [`${args.user_id_fkey}`]
           )
+          .then(data => {
+            console.log("from add bikes");
+            console.log(args);
+            console.log("data");
+            let data_id = data[0];
+            console.log(data[0]);
+            return data_id;
+            // success; .then(user => {
+          })
+          .catch(err => {
+            return "the error is", err;
+          });
+      }
+    },
+    addBikeDescription: {
+      type: BikeDescriptionType,
+      args: {
+        bikes_id_fkey: { type: new GraphQLNonNull(GraphQLInt) },
+        maker: { type: new GraphQLNonNull(GraphQLString) },
+        year: { type: new GraphQLNonNull(GraphQLInt) },
+        description: { type: new GraphQLNonNull(GraphQLString) },
+        condition: { type: new GraphQLNonNull(GraphQLString) },
+        transmission: { type: new GraphQLNonNull(GraphQLInt) },
+        location: { type: new GraphQLNonNull(GraphQLString) },
+        bike_price: { type: new GraphQLNonNull(GraphQLInt) },
+        model: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parentValue, args) {
+        return db.conn
           .any(
             `INSERT INTO public."bikes_descriptions"
-            (users_id_fkey) VALUES($1, $2, $3, $4, $5, $6)`,
+            (bikes_id_fkey, maker, year, description, condition, transmission, location, bike_price, model) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
             [
               `${args.bikes_id_fkey}`,
               `${args.maker}`,
-              `${args.model}`,
               `${args.year}`,
               `${args.description}`,
-              `${args.condition}`
+              `${args.condition}`,
+              `${args.transmission}`,
+              `${args.location}`,
+              `${args.bike_price}`,
+              `${args.model}`
             ]
           )
           .then(() => {

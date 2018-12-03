@@ -24,6 +24,8 @@ class Dashboard extends Component {
     let currentUser = this.props.getCurrentUserQuery.currentUser;
     let userName = currentUser.username;
     console.log(currentUser.username);
+    let id = currentUser.user_id + currentUser.user_id;
+    console.log(id);
     if (this.state.username === "") {
       this.setState({ username: userName });
     } else {

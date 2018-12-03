@@ -15,6 +15,7 @@ const SECRET = "billybobthorton";
 //jwt.verify isn't recieving the jwt token
 const addUser = async req => {
   const token = req.headers.authorization;
+  console.log("from add user");
   console.log("this is recieved " + token);
   try {
     const tokenArray = token.split(".");

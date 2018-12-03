@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import TextFieldGroup from "../../common/edit-profile/TextFieldGroup";
+import TextFieldGroup from "../../edit-profile/TextFieldGroup";
+import DropDown from "./DropDown";
 import { Link } from "react-router-dom";
 import {
   Collapse,
@@ -21,11 +22,11 @@ import {
 } from "reactstrap";
 
 const text = {
-  color: "#66fcf1"
+  color: "#f6ffec"
 };
 
 const navbar = {
-  background: "#1f2833"
+  background: "#76a2b2"
 };
 
 const first = {
@@ -47,6 +48,11 @@ const third = {
   marginLeft: "2rem",
   marginTop: "13px",
   width: "15rem"
+};
+
+const dropDown = {
+  marginLeft: "20rem",
+  marginTop: "35px"
 };
 
 class SearchBikes extends Component {
@@ -71,37 +77,42 @@ class SearchBikes extends Component {
             <Nav className="mr-auto" navbar>
               <NavItem style={first}>
                 <FormGroup>
-                  <Label style={{ color: "#66fcf1" }} for="where">
+                  <Label style={{ color: "#f6ffec" }} for="where">
                     Where
                   </Label>
-                  <Input
-                    type="where"
-                    name="where"
-                    id="where"
-                    placeholder="City"
+                  <input
+                    class="form-control form-control-sm"
+                    type="text"
+                    placeholder="where"
                   />
                 </FormGroup>
               </NavItem>
               <NavItem style={second}>
                 <FormGroup>
-                  <Label style={{ color: "#66fcf1" }} for="from">
+                  <Label style={{ color: "#f6ffec" }} for="from">
                     From
                   </Label>
-                  <Input type="date" name="from" id="from" placeholder="from" />
+                  <input
+                    class="form-control form-control-sm"
+                    type="date"
+                    placeholder="from"
+                  />
                 </FormGroup>
               </NavItem>
               <NavItem style={third}>
                 <FormGroup>
-                  <Label style={{ color: "#66fcf1" }} for="until">
+                  <Label style={{ color: "#f6ffec" }} for="until">
                     Until
                   </Label>
-                  <Input
+                  <input
+                    class="form-control form-control-sm"
                     type="date"
-                    name="until"
-                    id="until"
                     placeholder="until"
                   />
                 </FormGroup>
+              </NavItem>
+              <NavItem style={dropDown}>
+                <DropDown />
               </NavItem>
             </Nav>
           </Collapse>

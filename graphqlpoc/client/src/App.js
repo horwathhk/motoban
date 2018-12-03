@@ -16,6 +16,7 @@ import { ApolloLink, concat } from "apollo-link";
 
 //components
 import Landing from "./components/layout/Landing";
+import ListYourBike from "./components/common/listyourbike/ListYourBike";
 import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Signin from "./components/auth/Signin";
@@ -112,6 +113,12 @@ class App extends Component {
               exact
               path="/home"
               component={Home}
+              // props={AddUser}
+            />
+            <Route
+              exact
+              path="/list-your-bike"
+              component={ListYourBike}
               // props={AddUser}
             />
             <Footer />

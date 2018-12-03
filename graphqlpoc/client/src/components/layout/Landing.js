@@ -8,16 +8,19 @@ import TextFieldGroup from "../common/edit-profile/TextFieldGroup";
 import Navbar from "./Navbar/Navbar";
 
 const text = {
-  color: "black"
+  color: "black",
+  fontWeight: "bold"
 };
 
 const cardBody = {
-  height: "27rem",
-  width: "25rem"
+  height: "29rem",
+  width: "25rem",
+  opacity: "0.9"
 };
 
 const title = {
-  color: "black"
+  color: "black",
+  marginBottom: "2rem"
 };
 
 export default class Landing extends Component {
@@ -56,15 +59,16 @@ export default class Landing extends Component {
                     <h5 style={title} class="card-title">
                       Find a Ride. Start Your Journey.
                     </h5>
-                    {/* <p style={text}>Where</p> */}
+                    <p style={text}>Where</p>
                     <TextFieldGroup
-                      placeholder="Where"
+                      placeholder="Anywhere"
                       name="Where"
                       value={this.state.where}
                       onChange={this.onChange}
                       // error={errors.school}
                     />
-                    <h4>From</h4>
+                    <p style={text}>From</p>
+
                     <TextFieldGroup
                       name="from"
                       type="date"
@@ -72,7 +76,7 @@ export default class Landing extends Component {
                       onChange={this.onChange}
                       // error={errors.from}
                     />
-                    <h4>To</h4>
+                    <p style={text}>To</p>
                     <TextFieldGroup
                       name="from"
                       type="date"

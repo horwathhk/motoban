@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Flexbox from "flexbox-react";
 import { Container, Row, Col } from "reactstrap";
 
-import SearchBikes from "./SearchBikes";
+import SearchBikes from "./searchBikes/SearchBikes";
 import Filter from "./filter/Filter";
 import Bikes from "./Bikes";
 import GoogleMap from "./GoogleMap";
