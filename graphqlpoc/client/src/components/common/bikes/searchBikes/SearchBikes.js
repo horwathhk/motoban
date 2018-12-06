@@ -23,7 +23,7 @@ import {
 } from "reactstrap";
 
 const text = {
-  color: "#f6ffec",
+  color: "#d1c879",
   marginTop: "-30"
 };
 
@@ -69,7 +69,7 @@ class SearchBikes extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ backgroundColor: "#f6ffec" }}>
         <Navbar style={navbar} light expand="md">
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
@@ -79,7 +79,7 @@ class SearchBikes extends Component {
               </NavbarBrand>
               <NavItem style={first}>
                 <FormGroup row>
-                  <Label sm={2} style={{ color: "#f6ffec" }} for="where">
+                  <Label sm={2} style={{ color: "#d1c879" }} for="where">
                     Where
                   </Label>
                   <Col sm={10}>
@@ -99,7 +99,7 @@ class SearchBikes extends Component {
               </NavItem>
               <NavItem style={second}>
                 <FormGroup row>
-                  <Label sm={2} style={{ color: "#f6ffec" }} for="from">
+                  <Label sm={2} style={{ color: "#d1c879" }} for="from">
                     From
                   </Label>
                   <Col sm={10}>
@@ -108,7 +108,7 @@ class SearchBikes extends Component {
                         border: "0",
                         outline: "0",
                         background: "transparent",
-                        borderBottom: "1px solid #f6ffec",
+                        borderBottom: "1px solid #d1c879",
                         color: "#f6ffrc"
                       }}
                       class="form-control form-control-sm"
@@ -120,7 +120,7 @@ class SearchBikes extends Component {
               </NavItem>
               <NavItem style={third}>
                 <FormGroup row>
-                  <Label sm={2} style={{ color: "#f6ffec" }} for="until">
+                  <Label sm={2} style={{ color: "#d1c879" }} for="until">
                     Until
                   </Label>
                   <Col sm={10}>
@@ -129,7 +129,7 @@ class SearchBikes extends Component {
                         border: "0",
                         outline: "0",
                         background: "transparent",
-                        borderBottom: "1px solid #f6ffec"
+                        borderBottom: "1px solid #d1c879"
                       }}
                       class="form-control form-control-sm"
                       type="date"

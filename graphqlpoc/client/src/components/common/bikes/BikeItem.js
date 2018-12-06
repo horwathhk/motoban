@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+
 import {
   Card,
   CardImg,
@@ -14,27 +16,26 @@ import {
 
 import bike1 from "../../../image/bike1.png";
 
-const container = {
-  marginBottom: "30 rem",
-  marginTop: "30rem"
-};
-
-const topRowBuffer = {
-  marginTop: "5rem"
-};
-
-const rowBuffer = {
-  marginTop: "10rem"
-};
-
 export default class BikeItem extends Component {
+  // onClickBike(bike_id) {
+  //   console.log(bike.bike_id);
+  // }
+
   render() {
     const { bike } = this.props;
     console.log({ bike });
+
     return (
       <div style={{ marginTop: "30px" }}>
         <Col>
-          <Card style={{ height: "350px", width: "300px" }}>
+          {/* <Link
+            to="bike-profile"
+            
+          > */}
+          <Card
+            onClick={this.props.getBikeId.bind(this, bike.bike_id)}
+            style={{ height: "350px", width: "300px" }}
+          >
             <CardImg
               style={{ marginTop: "10px", height: "200px", width: "100%" }}
               top
@@ -49,6 +50,7 @@ export default class BikeItem extends Component {
               {/* <Button>See More</Button> */}
             </CardBody>
           </Card>
+          {/* </Link> */}
         </Col>
       </div>
     );

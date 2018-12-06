@@ -1,3 +1,47 @@
+getBikeId = bike_id => {
+    bike_id = Number(bike_id);
+    let { bikeID } = this.state;
+    console.log(bike_id);
+    console.log(typeof bike_id);
+    if (bikeID === null) {
+      console.log("state is null!");
+      this.setState({ bikeID: bike_id }, function() {
+        let { bikeID } = this.state;
+        console.log("bikeID from query");
+        console.log({ bikeID });
+
+        let response = this.props.getBikeQuery({
+          variables: { bikeID }
+        });
+        console.log("query fired");
+        console.log(response);
+      });
+    }
+  };  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  getBikeId = bike_id => {
+    let { bikeID } = this.state;
+    console.log(bike_id);
+    if (bikeID === null) {
+      this.setState({ bikeID: bike_id }, function() {
+        console.log({ bikeID });
+        // let response = this.props.getBikeQuery({
+        //   variables: this.props.bike_id
+      });
+    }
+  };
+
+
 import React, { Component } from "react";
 import NavBar from "../bikes/searchBikes/SearchBikes";
 import {

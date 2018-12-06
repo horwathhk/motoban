@@ -22,7 +22,9 @@ import Register from "./components/auth/Register";
 import Signin from "./components/auth/Signin";
 import SigninModule from "./components/layout/Navbar/SignInModal";
 import Dashboard from "./components/common/dashboard/Dashboard";
+import BikeProfile from "./components/common/bikes/bikeProfile/BikeProfile";
 import Home from "./components/common/bikes/Home";
+import Bikes from "./components/common/bikes/Bikes";
 //https://www.apollographql.com/docs/react/advanced/network-layer.html
 //https://www.apollographql.com/docs/react/recipes/authentication.html
 //https://www.youtube.com/watch?v=sK9SjEjlz6U&index=12&list=PLN3n1USn4xlkdRlq3VZ1sT6SGW0-yajjL
@@ -44,53 +46,10 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// const afterwareLink = new ApolloLink((operation, forward) => {
-//   return forward(operation).map(response => {
-//     const { response: { headers } } = operation.getContext();
-//     if (headers) {
-//       const token = headers.get("token");
-//       // const refreshToken = headers.get("x-refresh-token");
-
-//       if (token) {
-//         localStorage.setItem("token", token);
-//       }
-
-//       // if (refreshToken) {
-//       //   localStorage.setItem("refreshToken", refreshToken);
-//       // }
-//     }
-
-//     return response;
-//   });
-// });
-
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
-
-// const authLink = setContext((_, { headers }) => {
-//   // get the authentication token from local storage if it exists
-//   const token = localStorage.getItem("token");
-//   // return the headers to the context so httpLink can read them
-//   return {
-//     headers: {
-//       ...headers,
-//       authorization: token ? `Bearer ${token}` : ""
-//     }
-//   };
-// });
-
-// const authMiddleware = new ApolloLink((operation, forward) => {
-//   // add the authorization to the headers
-//   operation.setContext({
-//     headers: {
-//       authorization: localStorage.getItem("token") || null
-//     }
-//   });
-
-//   return forward(operation);
-// });
 
 class App extends Component {
   render() {
@@ -121,6 +80,13 @@ class App extends Component {
               component={ListYourBike}
               // props={AddUser}
             />
+            <Route
+              exact
+              path="/bikes"
+              component={Bikes}
+              // props={AddUser}
+            />
+            <Route exact path="/bike-profile" component={BikeProfile} />
             <Footer />
           </div>
         </Router>

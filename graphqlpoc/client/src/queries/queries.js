@@ -26,6 +26,24 @@ const getUserQuery = gql`
   }
 `;
 
+const getBikeQuery = gql`
+  query($bike_id: ID!) {
+    bike(bike_id: $bike_id) {
+      bike_id
+      user_id_fkey
+      bikes_id_fkey
+      maker
+      model
+      year
+      description
+      condition
+      transmission
+      location
+      bike_price
+    }
+  }
+`;
+
 const getBikesQuery = gql`
   {
     bikes {
@@ -111,6 +129,7 @@ export {
   getUserQuery,
   getCurrentUserQuery,
   getBikesQuery,
+  getBikeQuery,
   addUserMutation,
   signinMutation,
   addBikeToUserMutation,

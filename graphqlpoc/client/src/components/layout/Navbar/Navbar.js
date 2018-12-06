@@ -48,9 +48,9 @@ class Navbar extends Component {
     return (
       <nav style={navBar} className="navbar navbar-expand-sm navbar-dark mb-4">
         <div className="container">
-          <Link className="navbar-brand" to="/">
+          {/* <Link className="navbar-brand" to="/">
             Motobay
-          </Link>
+          </Link> */}
           <button
             className="navbar-toggler"
             type="button"

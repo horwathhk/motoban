@@ -197,7 +197,7 @@ const RootQuery = new GraphQLObjectType({
 
     bike: {
       type: BikeType,
-      args: { bike_id: { type: GraphQLID } },
+      args: { bike_id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parentValue, args) {
         const query = `SELECT * FROM public."bikes" b inner join public."bikes_descriptions" bd on b.bike_id = bd.bikes_id_fkey WHERE bike_id=${
           args.bike_id
@@ -205,6 +205,8 @@ const RootQuery = new GraphQLObjectType({
         return db.conn
           .one(query)
           .then(data => {
+            console.log("one result!");
+            console.log(data);
             return data;
           })
           .catch(err => {

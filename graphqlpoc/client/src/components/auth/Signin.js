@@ -59,38 +59,10 @@ class Signin extends Component {
     console.log(response);
     const { token } = response.data.signin;
     localStorage.setItem("token", token);
-    // console.log("current user");
-    // console.log(this.props.getCurrentUserQuery);
     this.props.history.push("/dashboard");
   };
-
-  //ccheck skype I sent a screenshot of the object we are getting
-  // console.log(response);
-  // localStorage.setItem("token", token);
-  // this.props.history.push("/dashboard");
-
-  // validate(username, password) {
-  //   // true means invalid, so our conditions got reversed
-  //   return {
-  //     username: username.length === 0,
-  //     password: password.length === 0
-  //   };
-  // }
-  // handleBlur = field => evt => {
-  //   this.setState({
-  //     touched: { ...this.state.touched, [field]: true }
-  //   });
-  // };
   render() {
     //ononchange is fired every keystroke
-
-    // const errors = this.validate(this.state.username, this.state.password);
-
-    // const shouldMarkError = field => {
-    //   const hasError = errors[field];
-    //   const shouldShow = this.state.touched[field];
-    //   return hasError ? shouldShow : false;
-    // };
 
     return (
       <div>
