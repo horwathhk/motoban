@@ -62,6 +62,128 @@ def generateRandomBikeManufacturerFKey():
     makers_id = [1,2,4,5,6,7,8,9]
     return makers_id[random.randint(1,len(makers_id)-1)]
 
+def getRandoStoreName():
+    listOfAdjectives = [
+        'Fast','Happy','Quick','Speedy','EZ','Hot','Fire','Beach','White','Red','Friendly','Kool', 'VIP'
+    ]
+    listOfNouns = [
+        'Rabbit','Dragon','Bike','Bamboo','Moto','Shop','Panda','Adventures'
+    ]
+    randoAdj = listOfAdjectives[random.randint(0, len(listOfAdjectives)-1)]
+    randoNoun = listOfNouns[random.randint(0, len(listOfNouns)-1)]
+    return randoAdj + ' ' + randoNoun + ' Rentals'
+
+def getRandoStoreEmail(storename):
+    
+    return storename.replace(" ", "") + '@test.com'
+
+def getRandoStoreAddress():
+    streetnum = random.randint(13,99999)
+    streetname = 'Main Street'
+    areacode = random.randint(24777,98999)
+    return str(streetnum) + ' ' + streetname + ', ' + str(areacode)
+
+def getRandoCountry():
+    # """ insert a new user into the users table """
+    sql_query = """SELECT countries_id
+             FROM locations_countries 
+             WHERE iso = 'VN' OR iso = 'KH' OR iso = 'TH'
+             """
+    conn = None
+    random_country_id = None
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        # execute the SELECT statement
+        cur.execute(sql_query)
+        
+        # get the rows back
+        rows = cur.fetchall()
+        randomIndex = random.randint(1,(len(rows)-1))
+        random_country_id = rows[randomIndex][0]
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error) # print exception details
+    finally:
+        if conn is not None:
+            conn.close()
+    print('random country_id for store: ' + str(random_country_id))
+    return random_country_id
+    
+def getRandoCity(sql_vals):
+    # """ insert a new user into the users table """
+    sql_query = """SELECT locations_cities_id
+             FROM locations_cities
+             WHERE locations_countries_id_fkey = %s
+             """
+    conn = None
+    random_city = None
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        # execute the SELECT statement
+        cur.execute(sql_query, sql_vals)
+        
+        # get the rows back
+        rows = cur.fetchall()
+        randomIndex = random.randint(1,(len(rows)-1))
+        random_city = rows[randomIndex][0]
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error) # print exception details
+    finally:
+        if conn is not None:
+            conn.close()
+    print('random random_city for store: ' + str(random_city))
+    return random_city
+
+def getRandoBikeCondition():
+     # """ insert a new user into the users table """
+    sql_query = """SELECT bikes_conditions_id
+             FROM bikes_conditions
+             """
+    conn = None
+    random_condition_id = None
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        # execute the SELECT statement
+        cur.execute(sql_query)
+        
+        # get the rows back
+        rows = cur.fetchall()
+        randomIndex = random.randint(1,(len(rows)-1))
+        random_condition_id = rows[randomIndex][0]
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error) # print exception details
+    finally:
+        if conn is not None:
+            conn.close()
+    print('random condition_id for bike: ' + str(random_condition_id))
+    return random_condition_id
+
+def getRandoYear():
+    return random.randint(1970, 2019)
+
+def getRandoTransmission():
+    return random.randint(1,3)
+
 def insert_user(sql_vals):
     # """ insert a new user into the users table """
     sql_query = """INSERT INTO users(username,password,email)
@@ -154,8 +276,8 @@ def insert_bike(sql_vals):
 
 def insert_bike_details(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO bikes_details(bikes_id_fkey, bikes_makers_id_fkey)
-             VALUES (%s,%s) RETURNING bikes_details_id;
+    sql_query = """INSERT INTO bikes_details(bikes_id_fkey, bikes_makers_id_fkey, bikes_conditions_id_fkey, year, transmission)
+             VALUES (%s,%s, %s, %s, %s) RETURNING bikes_details_id;
              """
     conn = None
     bikes_details_id = None
@@ -241,6 +363,36 @@ def insert_store(sql_vals):
             conn.close()
     print('stores_id: ' + str(store_id))
     return store_id
+
+def insert_store_details(sql_vals):
+    # """ insert a new user into the users table """
+    sql_query = """INSERT INTO stores_details(stores_id_fkey, store_name, locations_countries_id_fkey, locations_cities_id_fkey, store_email, store_address)
+             VALUES (%s,%s, %s, %s, %s, %s) RETURNING stores_details_id;
+             """
+    conn = None
+    stores_details_id = None
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        # execute the INSERT statement
+        cur.execute(sql_query, sql_vals)
+        # get the generated id back
+        stores_details_id = cur.fetchone()[0]
+        # commit the changes to the database
+        conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error) # print exception details
+    finally:
+        if conn is not None:
+            conn.close()
+    print('stores_details_id: ' + str(stores_details_id))
+    return stores_details_id
 
 def insert_rental_bike(sql_vals):
     # """ insert a new user into the users table """
@@ -392,14 +544,19 @@ def createNewRenters(howMany):
         new_bike3_id = insert_bike([new_user_id])
         new_bike4_id = insert_bike([new_user_id])
         new_bike5_id = insert_bike([new_user_id])
-        new_bike1_details_id = insert_bike_details([new_bike1_id, new_maker])
-        new_bike2_details_id = insert_bike_details([new_bike2_id, new_maker])
-        new_bike3_details_id = insert_bike_details([new_bike3_id, new_maker])
-        new_bike4_details_id = insert_bike_details([new_bike4_id, new_maker])
-        new_bike5_details_id = insert_bike_details([new_bike5_id, new_maker])
+        new_bike1_details_id = insert_bike_details([new_bike1_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
+        new_bike2_details_id = insert_bike_details([new_bike2_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
+        new_bike3_details_id = insert_bike_details([new_bike3_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
+        new_bike4_details_id = insert_bike_details([new_bike4_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
+        new_bike5_details_id = insert_bike_details([new_bike5_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
         
         new_renter_id = insert_renter([new_user_id])
         new_store_id = insert_store([new_renter_id])
+
+        rando_country = getRandoCountry()
+        rando_store_name = getRandoStoreName()
+        new_store_details_id = insert_store_details([new_store_id, rando_store_name, rando_country, getRandoCity([rando_country]), getRandoStoreEmail(rando_store_name), getRandoStoreAddress()])
+
         new_rental_bike1_id = insert_rental_bike([new_bike1_id, new_renter_id])
         new_rental_bike2_id = insert_rental_bike([new_bike2_id, new_renter_id])
         new_rental_bike3_id = insert_rental_bike([new_bike3_id, new_renter_id])
@@ -415,4 +572,4 @@ def createNewRenters(howMany):
     print('finished creating ' + str(howMany) + ' renters')
 
 # createNewUsers(15)
-createNewRenters(300)
+createNewRenters(20)
