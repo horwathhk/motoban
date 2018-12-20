@@ -13,17 +13,17 @@ ReactJS
 GraphQL and Apollo GraphQL
 
 ***Backend*** 
-NodeJS
+NodeJS,
 Express 
 
 ***Database*** 
 PostgreSQL 
 
 ***Helper Tools***
-JSON Web-Token
-Lodash
-Body-Parser
-PG-Promise
-Bcrypt
-Cors
+JSON Web-Token,
+Lodash,
+Body-Parser,
+PG-Promise,
+Bcrypt,
+Cors,
 urlencoded-parser
