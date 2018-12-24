@@ -14,9 +14,10 @@ import {
   Row,
   Col
 } from "reactstrap";
-import SortByModule from "./FilterModule";
+import SortByModule from "./SortByModule";
 import PriceModule from "./PriceModule";
 import OtherFiltersModule from "./OtherFiltersModule";
+import MapToggle from "./MapToggle";
 
 // const button = {
 //   color: "#c5c6c7",
@@ -52,17 +53,26 @@ class Filter extends React.Component {
   render() {
     return (
       <div>
-        <Row>
-          <Col>
+        <hr
+          style={{
+            marginBottom: "3px",
+            marginLeft: "0px",
+            overflow: "hidden"
+          }}
+        />
+        <div class="row justify-content-start">
+          <div class="col-1">
             <SortByModule />
-          </Col>
-          <Col>
+          </div>
+          <div class="col-1">
             <PriceModule />
-          </Col>
-          <Col>
+          </div>
+          <div class="col-1">
             <OtherFiltersModule />
-          </Col>
-        </Row>
+          </div>
+          <div class="col-4 ml-auto">{/* <MapToggle /> */}</div>
+        </div>
+        <hr style={{ marginTop: "-10px" }} />
       </div>
     );
   }

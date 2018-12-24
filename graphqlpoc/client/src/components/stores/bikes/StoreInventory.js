@@ -27,7 +27,8 @@ const row = {
 };
 
 const googleMap = {
-  overflow: "hidden"
+  overflow: "hidden",
+  background: "#f6ffec"
 };
 
 const container = {
@@ -83,13 +84,11 @@ class StoreInventory extends Component {
             <SearchBikes />
           </Col>
         </Row>
-        <Container style={container}>
-          <Row style={row}>
-            <Col xs="6">
-              <Filter />
-            </Col>
-          </Row>
-        </Container>
+        <Row style={row}>
+          <Col>
+            <Filter />
+          </Col>
+        </Row>
         <div className="container">
           <Row style={row}>
             <div className="col-md-12">

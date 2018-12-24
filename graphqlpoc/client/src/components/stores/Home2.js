@@ -32,7 +32,7 @@ const googleMap = {
 };
 
 const container = {
-  marginLeft: "10px"
+  marginLeft: "0px"
 };
 class Home extends Component {
   constructor(props) {
@@ -71,13 +71,11 @@ class Home extends Component {
             <SearchBikes />
           </Col>
         </Row>
-        <Container style={container}>
-          <Row style={row}>
-            <Col xs="6">
-              <Filter />
-            </Col>
-          </Row>
-        </Container>
+        <Row style={row}>
+          <Col>
+            <Filter />
+          </Col>
+        </Row>
         <Row style={row}>
           <Col>
             <Stores getStoreIdInHome={this.getStoreIdInHome} />
