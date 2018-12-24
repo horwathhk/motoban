@@ -17,7 +17,7 @@ class GoogleMap extends Component {
       // Important! Always set the container height explicitly
       <div
         style={{
-          marginTop: "32px",
+          marginTop: "65px",
           height: "100vh",
           width: "100%"
         }}

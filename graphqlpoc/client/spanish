@@ -1,3 +1,14 @@
+  <Button onClick={ function(event){ 
+              localStorage.clear();
+              this.props.history.push("/");}}>logout</Button>
+
+
+<Link to="/store-inventory" class="btn btn-primary">
+                              Go somewhere
+                            </Link>
+
+
+
 getBikeId = bike_id => {
     bike_id = Number(bike_id);
     let { bikeID } = this.state;

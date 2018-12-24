@@ -18,20 +18,11 @@ const {
 let UserType = new GraphQLObjectType({
   name: "User",
   fields: () => ({
-    user_id: { type: GraphQLID },
+    users_id: { type: GraphQLID },
     username: { type: GraphQLString },
     password: { type: GraphQLString },
     token: { type: GraphQLString },
     bikes: { type: GraphQLList(BikeType) }
-  })
-});
-let SigninResponseType = new GraphQLObjectType({
-  name: "SigninResponse",
-  fields: () => ({
-    ok: { type: GraphQLBoolean },
-    token: { type: GraphQLString },
-    user_id: { type: GraphQLID },
-    username: { type: GraphQLString }
   })
 });
 
@@ -45,7 +36,7 @@ let UserProfileType = new GraphQLObjectType({
     last_name: { type: GraphQLString },
     phone: { type: GraphQLString },
     // bikes_id_fkey: { type: GraphQLList },
-    bike_id: { type: GraphQLInt },
+    bikes_id: { type: GraphQLInt },
     maker: { type: GraphQLString },
     model: { type: GraphQLString },
     year: { type: GraphQLInt },
@@ -59,44 +50,84 @@ let UserProfileType = new GraphQLObjectType({
 let BikeType = new GraphQLObjectType({
   name: "bike",
   fields: () => ({
-    bike_id: { type: GraphQLID },
-    user_id_fkey: { type: GraphQLInt },
-    bikes_id_fkey: { type: GraphQLInt },
-    maker: { type: GraphQLString },
-    model: { type: GraphQLString },
+    bikes_details_id: { type: GraphQLID },
+    bikes_id: { type: GraphQLID },
+    bikes_id_fkey: { type: GraphQLID },
+    bikes_makers_id_fkey: { type: GraphQLID },
+    bikes_models_id_fkey: { type: GraphQLID },
     year: { type: GraphQLInt },
-    description: { type: GraphQLString },
-    condition: { type: GraphQLString },
     transmission: { type: GraphQLInt },
-    location: { type: GraphQLString },
-    bike_price: { type: GraphQLInt },
-    maker: { type: GraphQLString }
+    bikes_conditions_id_fkey: { type: GraphQLID },
+    bikes_makers_name: { type: GraphQLString },
+    bikes_models_name: { type: GraphQLString },
+    bikes_conditions: { type: GraphQLString },
+    users_id_fkey: { type: GraphQLID },
+    users_id: { type: GraphQLID },
+    username: { type: GraphQLString },
+    password: { type: GraphQLString },
+    email: { type: GraphQLString }
   })
 });
-let BikeDescriptionType = new GraphQLObjectType({
-  name: "bikeDescription",
+let BikeOfStoreType = new GraphQLObjectType({
+  name: "bikeOfStore",
   fields: () => ({
-    bikes_id_fkey: { type: GraphQLInt },
-    maker: { type: GraphQLString },
-    model: { type: GraphQLString },
+    bikes_rentals_locations_id: { type: GraphQLID },
+    bikes_rentals_id_fkey: { type: GraphQLID },
+    stores_id_fkey: { type: GraphQLID },
+    bikes_rentals_id: { type: GraphQLID },
+    bikes_id_fkey: { type: GraphQLID },
+    bikes_rentals_isAvailable: { type: GraphQLBoolean },
+    renters_id_fkey: { type: GraphQLID },
+    bikes_id: { type: GraphQLID },
+    users_id_fkey: { type: GraphQLID },
+    bikes_details_id: { type: GraphQLID },
+    bikes_makers_id_fkey: { type: GraphQLID },
+    bikes_models_id_fkey: { type: GraphQLID },
     year: { type: GraphQLInt },
-    description: { type: GraphQLString },
-    condition: { type: GraphQLString },
     transmission: { type: GraphQLInt },
-    location: { type: GraphQLString },
-    bike_price: { type: GraphQLInt }
+    bikes_conditions_id_fkey: { type: GraphQLID },
+    bikes_conditions_id: { type: GraphQLID },
+    bikes_conditions_type: { type: GraphQLString },
+    bikes_conditions_description: { type: GraphQLString },
+    bikes_makers_name: { type: GraphQLString },
+    bikes_models_name: { type: GraphQLString }
   })
 });
-
-// let UserWithAllBikesType = new GraphQLObjectType({
-//   name: "userWithAllBikes",
-//   fields: () => ({
-//     user_id: { type: GraphQLID },
-//     username: { type: GraphQLString },
-//     password: { type: GraphQLString },
-//     bikes: { type: GraphQLList(BikeType) }
-//   })
-// });
+let BikeDetailsType = new GraphQLObjectType({
+  name: "bikeDetails",
+  fields: () => ({
+    bike_details_id: { type: GraphQLID },
+    bikes_id_fkey: { type: GraphQLID },
+    bikes_makers_id_fkey: { type: GraphQLID },
+    bikes_models_id_fkey: { type: GraphQLID },
+    bikes_conditions_id_fkey: { type: GraphQLID },
+    year: { type: GraphQLInt },
+    transmission: { type: GraphQLInt }
+  })
+});
+let StoreType = new GraphQLObjectType({
+  name: "Store",
+  fields: () => ({
+    stores_details_id: { type: GraphQLID },
+    stores_id_fkey: { type: GraphQLInt },
+    store_name: { type: GraphQLString },
+    locations_countries_id_fkey: { type: GraphQLID },
+    locations_cities_id_fkey: { type: GraphQLID },
+    store_address: { type: GraphQLString },
+    store_phone: { type: GraphQLString },
+    store_phone_country_code: { type: GraphQLString },
+    store_website: { type: GraphQLString },
+    store_description: { type: GraphQLString },
+    store_hours: { type: GraphQLString },
+    store_email: { type: GraphQLString },
+    renters_id: { type: GraphQLID },
+    users_id_fkey: { type: GraphQLID },
+    users_id: { type: GraphQLID },
+    username: { type: GraphQLString },
+    password: { type: GraphQLString },
+    email: { type: GraphQLString }
+  })
+});
 
 const RootQuery = new GraphQLObjectType({
   name: "MotobanSchema",
@@ -135,6 +166,7 @@ const RootQuery = new GraphQLObjectType({
       args: null,
       resolve(parentValue, args, context, { user }) {
         console.log("context");
+        console.log(context);
         console.log(context.user);
         let currentUser = context.user;
         console.log(currentUser.user_id);
@@ -143,7 +175,8 @@ const RootQuery = new GraphQLObjectType({
         let query = "";
         if (currentUser) {
           query =
-            'SELECT * FROM public."users" WHERE user_id=' + currentUser.user_id;
+            'SELECT * FROM public."users" WHERE users_id=' +
+            currentUser.users_id;
           console.log(currentUser);
         } else {
           console.log("not logged in");
@@ -159,6 +192,7 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
+
     users: {
       type: new GraphQLList(UserType),
       resolve(parentValue, args) {
@@ -197,11 +231,23 @@ const RootQuery = new GraphQLObjectType({
 
     bike: {
       type: BikeType,
-      args: { bike_id: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { bikes_id_fkey: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parentValue, args) {
-        const query = `SELECT * FROM public."bikes" b inner join public."bikes_descriptions" bd on b.bike_id = bd.bikes_id_fkey WHERE bike_id=${
-          args.bike_id
-        } `;
+        const query = `SELECT  
+        bikes_details.*, 
+        bikes_makers.bikes_makers_name, 
+        bikes_models.bikes_models_name,
+        bikes_conditions.bikes_conditions_description, 
+        users.*
+        
+      FROM bikes_details
+      INNER JOIN bikes_conditions ON bikes_conditions.bikes_conditions_id = bikes_details.bikes_conditions_id_fkey
+      INNER JOIN bikes_makers on bikes_makers.bikes_makers_id = bikes_details.bikes_makers_id_fkey
+      LEFT JOIN bikes_models on bikes_models.bikes_models_id = bikes_details.bikes_models_id_fkey
+      INNER JOIN bikes on bikes_details.bikes_id_fkey = bikes.bikes_id
+      INNER JOIN users on users.users_id = bikes.users_id_fkey
+      
+      WHERE bikes_id_fkey =${args.bikes_id_fkey} `;
         return db.conn
           .one(query)
           .then(data => {
@@ -214,16 +260,23 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-
     bikes: {
       type: new GraphQLList(BikeType),
       args: { id: { type: GraphQLID } },
       resolve(parentValue, args) {
-        const query = `SELECT * FROM public."bikes" b 
-                            inner join 
-                        public."bikes_descriptions" bd 
-                            on 
-                        b.bike_id = bd.bikes_id_fkey`;
+        const query = `SELECT  
+        bikes_details.*, 
+        bikes_makers.bikes_makers_name, 
+        bikes_models.bikes_models_name,
+        bikes_conditions.bikes_conditions_descriptions, 
+        users.*
+        
+      FROM bikes_details
+      INNER JOIN bikes_conditions ON bikes_conditions.bikes_conditions_id = bikes_details.bikes_conditions_id_fkey
+      INNER JOIN bikes_makers on bikes_makers.bikes_makers_id = bikes_details.bikes_makers_id_fkey
+      LEFT JOIN bikes_models on bikes_models.bikes_models_id = bikes_details.bikes_models_id_fkey
+      INNER JOIN bikes on bikes_details.bikes_id_fkey = bikes.bikes_id
+      INNER JOIN users on users.users_id = bikes.users_id_fkey`;
         return db.conn
           .any(query)
           .then(data => {
@@ -235,7 +288,6 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-
     bikesOfUser: {
       type: new GraphQLList(BikeType),
       args: { user_id: { type: GraphQLID } },
@@ -255,6 +307,98 @@ const RootQuery = new GraphQLObjectType({
             return "The error is", err;
           });
       }
+    },
+
+    stores: {
+      type: new GraphQLList(StoreType),
+      args: { id: { type: GraphQLID } },
+      resolve(parentValue, args) {
+        const query = `SELECT  
+        stores_details.*,
+        renters.*,
+        users.*
+      FROM stores_details
+      INNER JOIN stores on stores_details.stores_id_fkey = stores.stores_id
+      INNER JOIN renters on renters.renters_id = stores.renters_id_fkey
+      INNER JOIN users on users.users_id = renters.users_id_fkey
+      `;
+        return db.conn
+          .any(query)
+          .then(data => {
+            console.log("from server");
+            console.log(data);
+            return data;
+          })
+          .catch(err => {
+            return "The error is", err;
+          });
+      }
+    },
+    bikesOfStore: {
+      type: new GraphQLList(BikeOfStoreType),
+      args: { store_id: { type: GraphQLID } },
+      resolve(parentValue, args) {
+        const query = `SELECT  
+                      bikes_rentals_locations.*,
+                      bikes_rentals.*,
+                      bikes.*,
+                      bikes_details.*,
+                      bikes_conditions.*,
+                      bikes_makers.bikes_makers_name, 
+	                    bikes_models.bikes_models_name
+	
+                      FROM bikes_rentals_locations
+                      INNER JOIN bikes_rentals ON bikes_rentals.bikes_rentals_id = bikes_rentals_locations.bikes_rentals_id_fkey
+                      INNER JOIN bikes ON bikes.bikes_id = bikes_rentals.bikes_id_fkey
+                      INNER JOIN bikes_details on bikes_details_id = bikes_id
+                      LEFT JOIN bikes_conditions ON bikes_conditions.bikes_conditions_id = bikes_details.bikes_conditions_id_fkey
+                      INNER JOIN bikes_makers on bikes_makers.bikes_makers_id = bikes_details.bikes_makers_id_fkey
+                      LEFT JOIN bikes_models on bikes_models.bikes_models_id = bikes_details.bikes_models_id_fkey
+
+                      WHERE stores_id_fkey = ${args.store_id}`;
+        return db.conn
+          .any(query)
+          .then(data => {
+            console.log(data);
+            return data;
+          })
+          .catch(err => {
+            return "The error is", err;
+          });
+      }
+    },
+    bikesOfStoreLimitTwo: {
+      type: new GraphQLList(BikeOfStoreType),
+      args: { store_id: { type: GraphQLID } },
+      resolve(parentValue, args) {
+        const query = `SELECT  
+                      bikes_rentals_locations.*,
+                      bikes_rentals.*,
+                      bikes.*,
+                      bikes_details.*,
+                      bikes_conditions.*,
+                      bikes_makers.bikes_makers_name, 
+	                    bikes_models.bikes_models_name
+	
+                      FROM bikes_rentals_locations
+                      INNER JOIN bikes_rentals ON bikes_rentals.bikes_rentals_id = bikes_rentals_locations.bikes_rentals_id_fkey
+                      INNER JOIN bikes ON bikes.bikes_id = bikes_rentals.bikes_id_fkey
+                      INNER JOIN bikes_details on bikes_details_id = bikes_id
+                      LEFT JOIN bikes_conditions ON bikes_conditions.bikes_conditions_id = bikes_details.bikes_conditions_id_fkey
+                      INNER JOIN bikes_makers on bikes_makers.bikes_makers_id = bikes_details.bikes_makers_id_fkey
+                      LEFT JOIN bikes_models on bikes_models.bikes_models_id = bikes_details.bikes_models_id_fkey
+
+                      WHERE stores_id_fkey = ${args.store_id} LIMIT 2`;
+        return db.conn
+          .any(query)
+          .then(data => {
+            console.log(data);
+            return data;
+          })
+          .catch(err => {
+            return "The error is", err;
+          });
+      }
     }
   }
 });
@@ -268,7 +412,8 @@ const mutation = new GraphQLObjectType({
       args: {
         id: { type: GraphQLID },
         username: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString) }
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve(parentValue, args, { SECRET }) {
         bcrypt.genSalt(10, (err, salt) => {
@@ -277,8 +422,8 @@ const mutation = new GraphQLObjectType({
             // let query =
             return db.conn
               .any(
-                'INSERT INTO public."users"(username, password) VALUES($1, $2)',
-                [`${args.username}`, `${args.password}`]
+                'INSERT INTO public."users"(username, password, email) VALUES($1, $2, $3)',
+                [`${args.username}`, `${args.password}`, `${args.username}`]
               )
               .then(user => {
                 console.log(user);
@@ -321,7 +466,7 @@ const mutation = new GraphQLObjectType({
           console.log(query);
           console.log("user.password");
           console.log(user.password);
-          console.log(user.user_id);
+          console.log(user.users_id);
           // console.log("user at sign in " + user.user_id + user.username);
           const valid = bcrypt.compare(args.password, user.password);
           if (!valid) {
@@ -331,7 +476,7 @@ const mutation = new GraphQLObjectType({
           }
           let token = jwt.sign(
             {
-              user: _.pick(user, ["user_id", "username"])
+              user: _.pick(user, ["users_id", "username"])
             },
             SECRET,
             {
@@ -348,7 +493,7 @@ const mutation = new GraphQLObjectType({
       type: BikeType,
       args: {
         id: { type: GraphQLID },
-        user_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
+        users_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
         // bikes_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
         // maker: { type: new GraphQLNonNull(GraphQLString) },
         // model: { type: new GraphQLNonNull(GraphQLString) },
@@ -364,8 +509,8 @@ const mutation = new GraphQLObjectType({
         return db.conn
           .any(
             `INSERT INTO public."bikes"
-            (user_id_fkey) VALUES($1) RETURNING bike_id`,
-            [`${args.user_id_fkey}`]
+            (users_id_fkey) VALUES($1) RETURNING bikes_id`,
+            [`${args.users_id_fkey}`]
           )
           .then(data => {
             console.log("from add bikes");
@@ -381,37 +526,32 @@ const mutation = new GraphQLObjectType({
           });
       }
     },
-    addBikeDescription: {
-      type: BikeDescriptionType,
+    addBikeDetails: {
+      type: BikeDetailsType,
       args: {
-        bikes_id_fkey: { type: new GraphQLNonNull(GraphQLInt) },
-        maker: { type: new GraphQLNonNull(GraphQLString) },
-        year: { type: new GraphQLNonNull(GraphQLInt) },
-        description: { type: new GraphQLNonNull(GraphQLString) },
-        condition: { type: new GraphQLNonNull(GraphQLString) },
-        transmission: { type: new GraphQLNonNull(GraphQLInt) },
-        location: { type: new GraphQLNonNull(GraphQLString) },
-        bike_price: { type: new GraphQLNonNull(GraphQLInt) },
-        model: { type: new GraphQLNonNull(GraphQLString) }
+        bikes_id_fkey: { type: new GraphQLNonNull(GraphQLID) },
+        bikes_makers_id_fkey: { type: GraphQLID },
+        bikes_models_id_fkey: { type: GraphQLID },
+        bikes_conditions_id_fkey: { type: GraphQLID },
+        year: { type: GraphQLInt },
+        transmission: { type: GraphQLInt }
       },
       resolve(parentValue, args) {
         return db.conn
           .any(
-            `INSERT INTO public."bikes_descriptions"
-            (bikes_id_fkey, maker, year, description, condition, transmission, location, bike_price, model) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            `INSERT INTO public."bikes_details"
+            (bikes_id_fkey, bikes_makers_id_fkey, bikes_conditions_id_fkey, bikes_models_id_fkey, year, transmission) VALUES($1, $2, $3, $4, $5, $6) RETURNING bikes_details_id`,
             [
               `${args.bikes_id_fkey}`,
-              `${args.maker}`,
+              `${args.bikes_makers_id_fkey}`,
+              `${args.bikes_models_id_fkey}`,
+              `${args.bikes_conditions_id_fkey}`,
               `${args.year}`,
-              `${args.description}`,
-              `${args.condition}`,
-              `${args.transmission}`,
-              `${args.location}`,
-              `${args.bike_price}`,
-              `${args.model}`
+              `${args.transmission}`
             ]
           )
-          .then(() => {
+          .then(data => {
+            console.log(data);
             return "success";
             // success;
           })

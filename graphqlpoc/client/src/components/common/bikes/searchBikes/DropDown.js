@@ -1,15 +1,22 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import aaron from "../../../../image/aaron.jpg";
-
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Button
 } from "reactstrap";
+import { ApolloLink } from "apollo-link";
 
-export default class DropDown extends Component {
+class DropDown extends Component {
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -23,6 +30,11 @@ export default class DropDown extends Component {
       dropdownOpen: !prevState.dropdownOpen
     }));
   }
+
+  // logout = e => {
+  //   localStorage.clear();
+  //   this.props.history.push("/");
+  // };
 
   render() {
     return (
@@ -49,13 +61,25 @@ export default class DropDown extends Component {
 
         <DropdownMenu>
           <DropdownItem>
+            <Link to="/dashboard">My Profile</Link>
+          </DropdownItem>
+          <DropdownItem>
             <Link to="/list-your-bike">List A Bike </Link>
           </DropdownItem>
-          <DropdownItem>Another Action</DropdownItem>
           <DropdownItem divider />
-          <DropdownItem>Another Action</DropdownItem>
+          <DropdownItem>
+            <Link
+              onClick={function() {
+                localStorage.clear();
+              }}
+              to="/"
+            >
+              logout
+            </Link>
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     );
   }
 }
+export default withRouter(DropDown);

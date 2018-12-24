@@ -2,72 +2,87 @@ import React, { Component } from "react";
 import { getBikeQuery } from "../../../../queries/queries";
 import { gql } from "apollo-boost";
 import { graphql, compose } from "react-apollo";
+//I think I should actually do this call once in BikeProfile and then pass all the data to the child components.
 
 class BikeDetails extends Component {
-  componentDidUpdate() {
-    console.log(this.props.bikeID);
+  constructor(props) {
+    super(props);
+    this.state = {
+      bike_id: null,
+      username: "",
+      email: "",
+      year: "",
+      transmission: "",
+      bikes_conditions_id_fkey: null,
+      bikes_makers_name: "",
+      bikes_models_name: "",
+      bikes_conditions: ""
+    };
   }
-
-  componentWillUpdate() {
-    console.log(this.props.bikeID);
-    let bike_id = this.props.bikeID;
-    console.log(typeof bike_id);
-    // if (bike_id !== null) {
-    //   this.props.getBikeQuery({
-    //     variables: {
-    //       bike_id: bike_id
-    //     }
-    //   });
-    // }
-  }
-  componentWillMount() {
-    console.log(this.props.bikeID);
-    console.log(this.props.bikeID);
-    let bike_id = this.props.bikeID;
-    console.log(typeof bike_id);
-    // if (bike_id !== null) {
-    //   this.props.getBikeQuery({
-    //     variables: {
-    //       bike_id: bike_id
-    //     }
-    //   });
-    // }
+  componentWillReceiveProps(nextProps) {
+    let bike = nextProps.data.bike;
+    console.log(bike);
+    this.setState(
+      {
+        bike_id: bike.bike_id,
+        username: bike.username,
+        email: bike.email,
+        year: bike.year,
+        transmission: bike.transmission,
+        bikes_makers_name: bike.bikes_makers_name,
+        bikes_models_name: bike.bikes_models_name,
+        bikes_conditions: bike.bikes_conditions
+      },
+      function() {
+        console.log(this.state.bike_id);
+      }
+    );
   }
 
   render() {
-    console.log("from bike details");
-    console.log(this.props.bikeID);
-    let bikes = this.props.getBikeQuery;
-    let bike = this.props;
-    console.log(bike);
-    console.log(this.props);
-    console.log(bikes);
+    let {
+      bike_id,
+      username,
+      email,
+      year,
+      transmission,
+      bikes_conditions_id_fkey,
+      bikes_makers_name,
+      bikes_models_name,
+      bikes_conditions
+    } = this.state;
+    // console.log(props.bikeID);
+    console.log(this.state.bike);
+
     return (
       <div>
-        {this.props.bikeId}
         <div class="row justify-content-start">
           <div class="col-2">THE BIKE</div>
-          <div class="col-2">Aaron's</div>
+          <div class="col-6">
+            Aaron's {year} {bikes_makers_name} {bikes_models_name}
+          </div>
         </div>
         <div class="row justify-content-start">
           <div class="col-2" />
-          <div class="col-3">Honda Nuovo</div>
+          <div class="col-3" />
           <br />
         </div>
         <div class="row justify-content-start">
+          <div class="col-2">CONDITION:</div>
+          <div class="col-8">{bikes_conditions}</div>
           <div class="col-2" />
-          <div class="col-2">****</div>
-          <div class="col-2">5 trips</div>
         </div>
+        <br />
         <div class="row justify-content-start">
+          <div class="col-2">PRICE:</div>
+          <div class="col-6">/per day</div>
           <div class="col-2" />
-          <div class="col-2">MPG Icon</div>
-          <div class="col-2">Gas Type Icon</div>
         </div>
+        <br />
         <div class="row justify-content-start">
+          <div class="col-2">LOCATION:</div>
+          <div class="col-6" />
           <div class="col-2" />
-          <div class="col-2">2 Door</div>
-          <div class="col-2">5 Seat</div>
         </div>
         <br />
         <br />
@@ -79,17 +94,7 @@ class BikeDetails extends Component {
         <br />
         <div class="row justify-content-start">
           <div class="col-2">DESCRIPTION</div>
-          <div class="col-12">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </div>
+          <div class="col-12" />
         </div>
         <br />
         <div class="row justify-content-start">
@@ -103,12 +108,11 @@ class BikeDetails extends Component {
           <div class="col-3">Phone Holder</div>
         </div>
       </div>
-      // </div>
     );
   }
 }
 
 export default graphql(getBikeQuery, {
-  options: props => ({ variables: { bike_id: props.bikeID } })
+  options: props => ({ variables: { bikes_id_fkey: props.bikeID } })
 })(BikeDetails);
 // BikeDetails;

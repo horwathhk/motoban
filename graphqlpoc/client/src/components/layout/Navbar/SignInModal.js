@@ -49,8 +49,6 @@ class SigninModal extends React.Component {
     console.log(response);
     const { token } = response.data.signin;
     localStorage.setItem("token", token);
-    // console.log("current user");
-    // console.log(this.props.getCurrentUserQuery);
     this.props.history.push("/dashboard");
   };
 
@@ -80,9 +78,6 @@ class SigninModal extends React.Component {
                         onChange={e =>
                           this.setState({ username: e.target.value })
                         }
-                        // className={shouldMarkError("username") ? "error" : ""}
-                        // onBlur={this.handleBlur("username")}
-                        // error={errors.username}
                       />
                       <TextFieldGroup
                         placeholder="Password"
@@ -91,9 +86,6 @@ class SigninModal extends React.Component {
                         onChange={e =>
                           this.setState({ password: e.target.value })
                         }
-                        // error={errors.password}
-                        // className={shouldMarkError("password") ? "error" : ""}
-                        // onBlur={this.handleBlur("password")}
                       />
                       <input
                         // disabled={!isEnabled}

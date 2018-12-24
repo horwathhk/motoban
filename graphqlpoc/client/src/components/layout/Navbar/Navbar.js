@@ -63,7 +63,7 @@ class Navbar extends Component {
           <div className="collapse navbar-collapse" id="mobile-nav">
             <ul className="navbar-nav ml-md-auto">
               <li className="nav-item">
-                <Button style={button} tag={Link} to="/home">
+                <Button style={button} tag={Link} to="/home2">
                   Motorbikes for Rent
                 </Button>
               </li>

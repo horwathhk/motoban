@@ -12,8 +12,8 @@ import {
   Row,
   Col
 } from "reactstrap";
-import { getBikeQuery, getBikesQuery } from "../../../queries/queries";
-import BikeItem from "./BikeItem";
+import { getBikesOfStoreQuery, getBikesQuery } from "../../../queries/queries";
+import BikeCard from "./BikeCard";
 
 const row = {
   marginTop: "33px"
@@ -39,9 +39,9 @@ class Bikes extends Component {
       console.log("state is null!");
 
       this.setState({ bike_id: bikeID }, function() {
-        let { bike_id } = this.state;
+        // let { bike_id } = this.state;
         // let bikeyID = Number({ bike_id });
-        console.log({ bike_id });
+        console.log(this.state.bike_id);
         this.props.getBikeIdInHome(this.state.bike_id);
         // console.log(bikeyID);
         localStorage.setItem("bike_id", bike_id);
@@ -50,16 +50,23 @@ class Bikes extends Component {
 
     // this.props.history.push("/bike-profile");
   };
+  componentWillMount() {
+    let bike = this.props.data;
+  }
 
   render() {
+    let { bike_id } = this.state;
+    // console.log({ bikeID });
+
+    console.log("passed down from inventory");
+    console.log(this.props.storeID);
     let i;
     let bikeItems;
-    let bikes = this.props.getBikesQuery.bikes;
-    console.log(bikes);
+    let bikes = this.props.data.bikesOfStore;
     console.log(bikes);
     if (bikes) {
       bikeItems = bikes.map(bike => (
-        <BikeItem getBikeId={this.getBikeId} key={bike.bike_id} bike={bike} />
+        <BikeCard getBikeId={this.getBikeId} key={bike.bike_id} bike={bike} />
       ));
     }
 
@@ -69,10 +76,6 @@ class Bikes extends Component {
   }
 }
 
-export default compose(
-  graphql(
-    getBikesQuery,
-    { name: "getBikesQuery" },
-    { options: { fetchPolicy: "network-only" } }
-  )
-)(Bikes);
+export default graphql(getBikesOfStoreQuery, {
+  options: props => ({ variables: { store_id: props.storeID } })
+})(Bikes);
