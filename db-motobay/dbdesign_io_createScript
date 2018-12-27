@@ -106,6 +106,13 @@ Table stores {
 }
 Ref: stores.renters_id_fkey > renters.renters_id
 
+Table stores_signin {
+  stores_signin_id int PK
+  stores_id_fkey int
+  stores_password varchar
+}
+Ref: stores_signin.stores_id_fkey > stores.stores_id
+
 Table stores_details {
   stores_details_id int PK 
   stores_id_fkey int
@@ -152,6 +159,12 @@ Table rental_contracts_dates {
   rental_contracts_dates_timestamp timestamp
   startdate datetime
   enddate datetime
+  rental_contracts_dates_price_per_day int
+  rental_contracts_dates_number_of_days int
+  rental_contracts_dates_total_price_of_date_range int
+  rental_contracts_dates_isExtension boolean
+  rental_contracts_dates_isOwnerApproved boolean
+  rental_contracts_dates_isRenterApproved boolean
 }
 Ref: rental_contracts_dates.rental_contracts_id_fkey > rental_contracts.rental_contracts_id
 
@@ -164,8 +177,6 @@ Table rental_contracts_payment_status {
 Table rental_contracts_payments {
   rental_contracts_payments int PK 
   rental_contracts_id_fkey int
-  rental_contracts_payments_price_per_day int
-  rental_contracts_payments_number_of_days int
   rental_contracts_total_price int
   rental_contracts_payment_status_id_fkey int // pending, paid, denied, etc. preset list of payment statuses
 }
