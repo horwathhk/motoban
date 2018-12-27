@@ -111,7 +111,7 @@ Table stores_signin {
   stores_id_fkey int
   stores_password varchar
 }
-Ref: stores_signin.stores_id_fkey > stores.stores_id
+Ref: stores_signin.stores_id_fkey - stores.stores_id
 
 Table stores_details {
   stores_details_id int PK 
@@ -161,7 +161,7 @@ Table rental_contracts_dates {
   enddate datetime
   rental_contracts_dates_price_per_day int
   rental_contracts_dates_number_of_days int
-  rental_contracts_dates_total_price_of_date_range int
+  rental_contracts_dates_total_price_of_dates int
   rental_contracts_dates_isExtension boolean
   rental_contracts_dates_isOwnerApproved boolean
   rental_contracts_dates_isRenterApproved boolean
@@ -183,6 +183,18 @@ Table rental_contracts_payments {
 Ref: rental_contracts_payments.rental_contracts_id_fkey > rental_contracts.rental_contracts_id
 Ref: rental_contracts_payments.rental_contracts_payment_status_id_fkey > rental_contracts_payment_status.rental_contracts_payment_status_id
 
+Table rental_contracts_partial_refunds {
+  rental_contracts_partial_refunds_id int PK 
+  rental_contracts_id_fkey int
+  rental_contracts_partial_refunds_amount int
+}
+Ref: rental_contracts_partial_refunds.rental_contracts_id_fkey > rental_contracts.rental_contracts_id
 
-
+Table rental_contracts_coupon_codes { // id works on frontend only and update per the rental_contracts_dates_total_price_of_dates 
+  rental_contracts_coupon_codes_id int PK 
+  rental_contracts_coupon_codes_code varchar // unique string
+  rental_contracts_coupon_codes_amount int // depends on type
+  rental_contracts_coupon_codes_type int // percentage off, or $ off
+  rental_contracts_coupon_codes_isValid boolean
+}
 
