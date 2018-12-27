@@ -27,6 +27,7 @@ const addUser = async req => {
     // let users = user.user_id;
     // console.log("user" + "" + user.username + " " + user.user_id);
     // console.log("users " + users);
+    console.log("user");
     console.log(user);
   } catch (err) {
     console.log("err" + err + token);
@@ -92,6 +93,7 @@ app.use(
   "/motoban",
   [bodyParser.json()],
   GraphQLHTTP(req => {
+    console.log("before graphql");
     console.log(req.user);
     return {
       schema: motobanSchema,

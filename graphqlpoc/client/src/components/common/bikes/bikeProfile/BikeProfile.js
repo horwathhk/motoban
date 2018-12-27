@@ -22,24 +22,10 @@ class BikeProfile extends Component {
     console.log(this.props.location.state.bike_id);
     let bikeID = this.props.location.state.bike_id;
     this.setState({ bike_id: bikeID });
-
-    //   function() {
-    //   this.props.getBikeQuery({
-    //     variables: Number(this.state.bike_id)
-    //   });
-    // });
     console.log(typeof bike_id);
     const response = this.props.getBikeQuery;
     console.log("response form componentWillMount");
     console.log(response);
-  }
-
-  componentDidUpdate() {
-    // console.log("component did update");
-    // console.log(this.props.location.state.bike_id);
-    // console.log("response in component did update");
-    // // console.log(response);
-    // console.log(bike_id);
   }
 
   render() {
@@ -50,7 +36,10 @@ class BikeProfile extends Component {
     return (
       <div>
         <SearchBikes />
-        <div className="jumbotron jumbotron-fluid">
+        <div
+          style={{ marginTop: "-4rem" }}
+          className="jumbotron jumbotron-fluid"
+        >
           <BikeCarousel />
         </div>
         <div
@@ -70,7 +59,7 @@ class BikeProfile extends Component {
               <Reviews />
             </div>
             <div className="col-4">
-              <OwnerDetails />
+              <OwnerDetails bikeID={bike_id} />
             </div>
           </div>
         </div>

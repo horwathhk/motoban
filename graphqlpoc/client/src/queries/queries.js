@@ -11,7 +11,7 @@ const getUsersQuery = gql`
 const getCurrentUserQuery = gql`
   {
     currentUser {
-      user_id
+      users_id
       username
       token
     }
@@ -27,19 +27,21 @@ const getUserQuery = gql`
 `;
 
 const getBikeQuery = gql`
-  query($bike_id: ID!) {
-    bike(bike_id: $bike_id) {
-      bike_id
-      user_id_fkey
+  query($bikes_id_fkey: ID!) {
+    bike(bikes_id_fkey: $bikes_id_fkey) {
+      bikes_details_id
       bikes_id_fkey
-      maker
-      model
+      bikes_makers_id_fkey
+      bikes_models_id_fkey
       year
-      description
-      condition
       transmission
-      location
-      bike_price
+      bikes_conditions_id_fkey
+      bikes_makers_name
+      bikes_models_name
+      users_id
+      username
+      password
+      email
     }
   }
 `;
@@ -56,6 +58,83 @@ const getBikesQuery = gql`
       description
       condition
       bike_price
+    }
+  }
+`;
+const getStoresQuery = gql`
+  {
+    stores {
+      stores_details_id
+      stores_id_fkey
+      store_name
+      locations_countries_id_fkey
+      locations_cities_id_fkey
+      store_address
+      store_phone
+      store_phone_country_code
+      store_website
+      store_description
+      store_hours
+      store_email
+      renters_id
+      users_id_fkey
+      users_id
+      username
+      password
+      email
+    }
+  }
+`;
+
+const getBikesOfStoreQuery = gql`
+  query($store_id: ID!) {
+    bikesOfStore(store_id: $store_id) {
+      bikes_rentals_locations_id
+      bikes_rentals_id_fkey
+      stores_id_fkey
+      bikes_rentals_id
+      bikes_id_fkey
+      bikes_rentals_isAvailable
+      renters_id_fkey
+      bikes_id
+      users_id_fkey
+      bikes_details_id
+      bikes_makers_id_fkey
+      bikes_models_id_fkey
+      year
+      transmission
+      bikes_conditions_id_fkey
+      bikes_conditions_id
+      bikes_conditions_type
+      bikes_conditions_description
+      bikes_makers_name
+      bikes_models_name
+    }
+  }
+`;
+const getBikesOfStoreLimitTwoQuery = gql`
+  query($store_id: ID!) {
+    bikesOfStoreLimitTwo(store_id: $store_id) {
+      bikes_rentals_locations_id
+      bikes_rentals_id_fkey
+      stores_id_fkey
+      bikes_rentals_id
+      bikes_id_fkey
+      bikes_rentals_isAvailable
+      renters_id_fkey
+      bikes_id
+      users_id_fkey
+      bikes_details_id
+      bikes_makers_id_fkey
+      bikes_models_id_fkey
+      year
+      transmission
+      bikes_conditions_id_fkey
+      bikes_conditions_id
+      bikes_conditions_type
+      bikes_conditions_description
+      bikes_makers_name
+      bikes_models_name
     }
   }
 `;
@@ -80,46 +159,37 @@ const addUserMutation = gql`
 `;
 
 const addBikeToUserMutation = gql`
-  mutation($user_id_fkey: Int!) {
-    addBikeToUser(user_id_fkey: $user_id_fkey) {
-      user_id_fkey
-      bike_id
+  mutation($users_id_fkey: Int!) {
+    addBikeToUser(users_id_fkey: $users_id_fkey) {
+      users_id_fkey
+      bikes_id
     }
   }
 `;
 
-const addBikeDescriptionMutation = gql`
+const addBikeDetailsMutation = gql`
   mutation(
-    $bikes_id_fkey: Int!
-    $maker: String!
+    $bikes_id_fkey: ID!
     $year: Int!
-    $description: String!
-    $condition: String!
     $transmission: Int!
-    $location: String!
-    $bike_price: Int!
-    $model: String!
+    $bikes_makers_id_fkey: ID!
+    $bikes_models_id_fkey: ID!
+    $bikes_conditions_id_fkey: ID!
   ) {
-    addBikeDescription(
+    addBikeDetails(
       bikes_id_fkey: $bikes_id_fkey
-      maker: $maker
+      bikes_makers_id_fkey: $bikes_makers_id_fkey
       year: $year
-      description: $description
-      condition: $condition
       transmission: $transmission
-      location: $location
-      bike_price: $bike_price
-      model: $model
+      bikes_models_id_fkey: $bikes_models_id_fkey
+      bikes_conditions_id_fkey: $bikes_conditions_id_fkey
     ) {
       bikes_id_fkey
-      maker
+      bikes_makers_id_fkey
+      bikes_models_id_fkey
       year
-      description
-      condition
       transmission
-      location
-      bike_price
-      model
+      bikes_conditions_id_fkey
     }
   }
 `;
@@ -130,8 +200,11 @@ export {
   getCurrentUserQuery,
   getBikesQuery,
   getBikeQuery,
+  getStoresQuery,
+  getBikesOfStoreQuery,
+  getBikesOfStoreLimitTwoQuery,
   addUserMutation,
   signinMutation,
   addBikeToUserMutation,
-  addBikeDescriptionMutation
+  addBikeDetailsMutation
 };

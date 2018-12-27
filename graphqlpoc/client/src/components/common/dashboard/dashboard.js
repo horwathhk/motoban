@@ -3,54 +3,44 @@ import { gql } from "apollo-boost";
 import { graphql, compose } from "react-apollo";
 import classnames from "classnames";
 import { getCurrentUserQuery } from "../../../queries/queries";
+import Tabs from "./Tabs";
+import SearchBikes from "../bikes/searchBikes/SearchBikes";
+import Sidebar from "./SideBar";
 
 class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: ""
-      // errors: {
-      //   username: false,
-      //   password: false
-      // },
-      // touched: {
-      //   username: false,
-      //   password: false
-      // }
+      username: null
     };
   }
 
+  //"working" code
   componentDidUpdate() {
     let currentUser = this.props.getCurrentUserQuery.currentUser;
+    console.log(currentUser);
     let userName = currentUser.username;
     console.log(currentUser.username);
     let id = currentUser.user_id + currentUser.user_id;
     console.log(id);
-    if (this.state.username === "") {
-      this.setState({ username: userName });
+    if (this.state.username === null) {
+      this.setState({ username: userName }, function() {
+        console.log("state changed in dash!");
+        console.log(this.state.username);
+      });
     } else {
       return this.state.username;
     }
   }
-  //   // let user;
-  //   // let userName;
-  //   // console.log("data from dashboard");
-  //   // user = this.props.getCurrentUserQuery.currentUser;
-  //   // console.log("from dashboard");
-  //   // console.log(user);
-  //   // userName = user.username;
-  //   // console.log(userName);
-  //   // this.setState({ username: userName });
-  // }
-
   render() {
-    let { username } = this.state;
+    let currentUser = this.props.getCurrentUserQuery.currentUser;
+    console.log(currentUser);
 
-    // let currentUser = this.props.getCurrentUserQuery.currentUser;
-    // console.log(currentUser);
+    let { username } = this.state;
     return (
       <div>
-        <h1>{username}'s Dashboard</h1>
+        <SearchBikes />
+        <Tabs />
       </div>
     );
   }

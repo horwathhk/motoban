@@ -23,12 +23,12 @@ import {
 } from "reactstrap";
 
 const text = {
-  color: "#d1c879",
+  color: "#f6ffec",
   marginTop: "-30"
 };
 
 const navbar = {
-  background: "#3b2722",
+  background: "#76a2b2",
   width: "100%"
 };
 
@@ -79,7 +79,7 @@ class SearchBikes extends Component {
               </NavbarBrand>
               <NavItem style={first}>
                 <FormGroup row>
-                  <Label sm={2} style={{ color: "#d1c879" }} for="where">
+                  <Label sm={2} style={{ color: "#f6ffec" }} for="where">
                     Where
                   </Label>
                   <Col sm={10}>
@@ -99,7 +99,7 @@ class SearchBikes extends Component {
               </NavItem>
               <NavItem style={second}>
                 <FormGroup row>
-                  <Label sm={2} style={{ color: "#d1c879" }} for="from">
+                  <Label sm={2} style={{ color: "#f6ffec" }} for="from">
                     From
                   </Label>
                   <Col sm={10}>
@@ -108,7 +108,7 @@ class SearchBikes extends Component {
                         border: "0",
                         outline: "0",
                         background: "transparent",
-                        borderBottom: "1px solid #d1c879",
+                        borderBottom: "1px solid #f6ffec",
                         color: "#f6ffrc"
                       }}
                       class="form-control form-control-sm"
@@ -120,7 +120,7 @@ class SearchBikes extends Component {
               </NavItem>
               <NavItem style={third}>
                 <FormGroup row>
-                  <Label sm={2} style={{ color: "#d1c879" }} for="until">
+                  <Label sm={2} style={{ color: "#f6ffec" }} for="until">
                     Until
                   </Label>
                   <Col sm={10}>
@@ -129,7 +129,7 @@ class SearchBikes extends Component {
                         border: "0",
                         outline: "0",
                         background: "transparent",
-                        borderBottom: "1px solid #d1c879"
+                        borderBottom: "1px solid #f6ffec "
                       }}
                       class="form-control form-control-sm"
                       type="date"

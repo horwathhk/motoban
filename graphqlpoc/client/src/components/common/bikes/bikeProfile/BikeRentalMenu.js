@@ -14,6 +14,7 @@ class BikeRentalMenu extends React.Component {
   render() {
     return (
       <Form>
+        <h1>Book a Rental</h1>
         <Row form>
           <Col md={6}>
             <FormGroup>
@@ -41,10 +42,11 @@ class BikeRentalMenu extends React.Component {
         <FormGroup>
           <Label for="exampleAddress">Pick Up Location</Label>
           <Input type="select">
-            <option>Default Select</option>
+            <option>Select Pick Up Location</option>
+            <option>At the Store</option>
+            <option>A different address</option>
           </Input>
         </FormGroup>
-
         <Button>Check Out</Button>
       </Form>
     );
