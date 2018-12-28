@@ -1,3 +1,45 @@
+  
+     <div style={card} className="card">
+                          <img
+                            className="card-img-top"
+                            src={Bike2}
+                            alt="Card image cap"
+                            style={{
+                              marginTop: "2rem",
+                              height: "100px",
+                              width: "200px"
+                            }}
+                          />
+                          <div className="card-body">
+                            <h5 className="card-title">
+                              Special title treatment
+                            </h5>
+                            <p className="card-text">
+                              With supporting text below as a natural lead-in to
+                              additional content.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   <Button onClick={ function(event){ 
               localStorage.clear();
               this.props.history.push("/");}}>logout</Button>

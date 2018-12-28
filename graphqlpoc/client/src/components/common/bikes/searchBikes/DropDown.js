@@ -66,6 +66,9 @@ class DropDown extends Component {
           <DropdownItem>
             <Link to="/list-your-bike">List A Bike </Link>
           </DropdownItem>
+          <DropdownItem>
+            <Link to="/renter-registration-home-page">Become a Renter </Link>
+          </DropdownItem>
           <DropdownItem divider />
           <DropdownItem>
             <Link

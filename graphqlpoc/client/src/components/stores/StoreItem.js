@@ -31,16 +31,19 @@ export default class StoreItem extends Component {
               className="card"
               onClick={this.props.getStoreId.bind(this, store.stores_id_fkey)}
             >
-              <div className="card-body">
+              <div style={{ backgroundColor: "white" }} className="card-body">
                 <div className="row">
                   <div className="col-md-4">
                     <div className="display-4">{store.store_name}</div>
                     <br />
 
                     <br />
-                    <Link to="/store-inventory" class="btn btn-primary">
+                    <Button
+                      style={{ backgroundColor: "#cf4b11" }}
+                      to="/store-inventory"
+                    >
                       View Bikes
-                    </Link>
+                    </Button>
                   </div>
                   <FeaturedBikes storeID={store.stores_id_fkey} />
                 </div>

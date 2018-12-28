@@ -56,7 +56,7 @@ class Stores extends Component {
     let { bikeID } = this.state;
     let i;
     let storeItems;
-    let stores = this.props.getStoresQuery.stores;
+    let stores = this.props.getStoresQuery.AllStores;
     console.log(stores);
     console.log(stores);
     if (stores) {

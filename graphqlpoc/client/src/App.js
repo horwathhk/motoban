@@ -27,7 +27,10 @@ import Bikes from "./components/common/bikes/Bikes";
 import Home2 from "./components/stores/Home2";
 import StoreInventory from "./components/stores/bikes/StoreInventory";
 import DropDown from "./components/common/bikes/searchBikes/SearchBikes";
-
+import RenterRegistrationHomePage from "./components/stores/renterRegistration/RenterRegistrationHomePage";
+import RenterRegistration from "./components/stores/renterRegistration/RenterRegistration";
+import StoreRegistrationHomePage from "./components/stores/bikes/storeRegistration/StoreRegistrationHomePage";
+import StoreRegistration from "./components/stores/bikes/storeRegistration/StoreRegistration";
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/motoban",
   credentials: "same-origin"
@@ -69,6 +72,26 @@ class App extends Component {
             <Route exact path="/home2" component={Home2} />
             <Route exact path="/store-inventory" component={StoreInventory} />
             <Route exact path="/dropdown" component={DropDown} />
+            <Route
+              exact
+              path="/renter-registration-home-page"
+              component={RenterRegistrationHomePage}
+            />
+            <Route
+              exact
+              path="/renter-registration"
+              component={RenterRegistration}
+            />
+            <Route
+              exact
+              path="/store-registration-home-page"
+              component={StoreRegistrationHomePage}
+            />
+            <Route
+              exact
+              path="/store-registration"
+              component={StoreRegistration}
+            />
             <Footer />
           </div>
         </Router>

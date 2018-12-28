@@ -28,7 +28,7 @@ const text = {
 };
 
 const navbar = {
-  background: "#76a2b2",
+  background: "#200e1c",
   width: "100%"
 };
 
@@ -69,13 +69,13 @@ class SearchBikes extends Component {
 
   render() {
     return (
-      <div style={{ backgroundColor: "#f6ffec" }}>
+      <div>
         <Navbar style={navbar} light expand="md">
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="mr-auto" navbar>
               <NavbarBrand row style={text} href="/">
-                Motoban
+                Motobay
               </NavbarBrand>
               <NavItem style={first}>
                 <FormGroup row>

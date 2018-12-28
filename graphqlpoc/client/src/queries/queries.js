@@ -63,7 +63,7 @@ const getBikesQuery = gql`
 `;
 const getStoresQuery = gql`
   {
-    stores {
+    AllStores {
       stores_details_id
       stores_id_fkey
       store_name
@@ -158,9 +158,85 @@ const addUserMutation = gql`
   }
 `;
 
+const addRenterMutation = gql`
+  mutation($users_id_fkey: Int!) {
+    addRenter(users_id_fkey: $users_id_fkey) {
+      renters_id
+    }
+  }
+`;
+
+const addStoreMutation = gql`
+  mutation($renters_id_fkey: Int!) {
+    addStore(renters_id_fkey: $renters_id_fkey) {
+      renters_id_fkey
+      stores_id
+    }
+  }
+`;
+const addStoreDetailsMutation = gql`
+  mutation(
+    $stores_id_fkey: ID!
+    $store_name: String!
+    $locations_countries_id_fkey: ID!
+    $locations_cities_id_fkey: ID!
+    $store_address: String!
+    $store_phone: Int!
+    $store_phone_country_code: Int!
+    $store_website: String!
+    $store_description: String!
+    $store_hours: String!
+    $store_email: String!
+  ) {
+    addStoreDetails(
+      stores_id_fkey: $stores_id_fkey
+      store_name: $store_name
+      locations_countries_id_fkey: $locations_countries_id_fkey
+      locations_cities_id_fkey: $locations_cities_id_fkey
+      store_address: $store_address
+      store_phone: $store_phone
+      store_phone_country_code: $store_phone_country_code
+      store_website: $store_website
+      store_description: $store_description
+      store_hours: $store_hours
+      store_email: $store_email
+    ) {
+      stores_id_fkey
+      store_name
+      locations_countries_id_fkey
+      locations_cities_id_fkey
+      store_address
+      store_phone
+      store_phone_country_code
+      store_website
+      store_description
+      store_hours
+      store_email
+    }
+  }
+`;
+
+const addRenterDetailsMutation = gql`
+  mutation(
+    $renters_id_fkey: ID!
+    $renter_email: String!
+    $renter_country: String!
+  ) {
+    addRenterDetails(
+      renters_id_fkey: $renters_id_fkey
+      renter_email: $renter_email
+      renter_country: $renter_country
+    ) {
+      renters_id_fkey
+      renter_email
+      renter_country
+    }
+  }
+`;
+
 const addBikeToUserMutation = gql`
   mutation($users_id_fkey: Int!) {
-    addBikeToUser(users_id_fkey: $users_id_fkey) {
+    addRenter(users_id_fkey: $users_id_fkey) {
       users_id_fkey
       bikes_id
     }
@@ -204,6 +280,10 @@ export {
   getBikesOfStoreQuery,
   getBikesOfStoreLimitTwoQuery,
   addUserMutation,
+  addRenterMutation,
+  addRenterDetailsMutation,
+  addStoreMutation,
+  addStoreDetailsMutation,
   signinMutation,
   addBikeToUserMutation,
   addBikeDetailsMutation
