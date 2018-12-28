@@ -47,6 +47,24 @@ let UserProfileType = new GraphQLObjectType({
   })
 });
 
+let RenterType = new GraphQLObjectType({
+  name: "renter",
+  fields: () => ({
+    renters_id: { type: GraphQLID },
+    users_id_fkey: { type: GraphQLID }
+  })
+});
+
+let RenterDetailsType = new GraphQLObjectType({
+  name: "RenterDetails",
+  fields: () => ({
+    id: { type: GraphQLID },
+    renters_id_fkey: { type: GraphQLID },
+    renter_email: { type: GraphQLString },
+    renter_country: { type: GraphQLString }
+  })
+});
+
 let BikeType = new GraphQLObjectType({
   name: "bike",
   fields: () => ({
@@ -105,8 +123,8 @@ let BikeDetailsType = new GraphQLObjectType({
     transmission: { type: GraphQLInt }
   })
 });
-let StoreType = new GraphQLObjectType({
-  name: "Store",
+let AllStoreType = new GraphQLObjectType({
+  name: "AllStore",
   fields: () => ({
     stores_details_id: { type: GraphQLID },
     stores_id_fkey: { type: GraphQLInt },
@@ -126,6 +144,31 @@ let StoreType = new GraphQLObjectType({
     username: { type: GraphQLString },
     password: { type: GraphQLString },
     email: { type: GraphQLString }
+  })
+});
+let StoreType = new GraphQLObjectType({
+  name: "Store",
+  fields: () => ({
+    renters_id_fkey: { type: GraphQLID },
+    stores_id: { type: GraphQLID }
+  })
+});
+
+let StoreDetailsType = new GraphQLObjectType({
+  name: "StoreDetails",
+  fields: () => ({
+    stores_details_id: { type: GraphQLID },
+    stores_id_fkey: { type: GraphQLInt },
+    store_name: { type: GraphQLString },
+    locations_countries_id_fkey: { type: GraphQLID },
+    locations_cities_id_fkey: { type: GraphQLID },
+    store_address: { type: GraphQLString },
+    store_phone: { type: GraphQLInt },
+    store_phone_country_code: { type: GraphQLInt },
+    store_website: { type: GraphQLString },
+    store_description: { type: GraphQLString },
+    store_hours: { type: GraphQLString },
+    store_email: { type: GraphQLString }
   })
 });
 
@@ -308,9 +351,8 @@ const RootQuery = new GraphQLObjectType({
           });
       }
     },
-
-    stores: {
-      type: new GraphQLList(StoreType),
+    AllStores: {
+      type: new GraphQLList(AllStoreType),
       args: { id: { type: GraphQLID } },
       resolve(parentValue, args) {
         const query = `SELECT  
@@ -445,7 +487,6 @@ const mutation = new GraphQLObjectType({
         });
       }
     },
-
     signin: {
       type: UserType,
       args: {
@@ -489,21 +530,146 @@ const mutation = new GraphQLObjectType({
         });
       }
     },
+    addRenter: {
+      type: RenterType,
+      args: {
+        id: { type: GraphQLID },
+        users_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
+      },
+      resolve(parentValue, args) {
+        return db.conn
+          .any(
+            `INSERT INTO public."renters"
+            (users_id_fkey) VALUES($1) RETURNING renters_id`,
+            [`${args.users_id_fkey}`]
+          )
+          .then(data => {
+            console.log("data");
+            let data_id = data[0];
+            console.log(data[0]);
+            return data_id;
+            // success; .then(user => {
+          })
+          .catch(err => {
+            return "the error is", err;
+          });
+      }
+    },
+    addRenterDetails: {
+      type: RenterDetailsType,
+      args: {
+        id: { type: GraphQLID },
+        renters_id_fkey: { type: new GraphQLNonNull(GraphQLID) },
+        renter_email: { type: new GraphQLNonNull(GraphQLString) },
+        renter_country: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parentValue, args) {
+        return db.conn
+          .any(
+            `INSERT INTO public."renters_details"
+            (renters_id_fkey, renter_email, renter_country) VALUES($1,$2, $3) RETURNING renter_country`,
+            [
+              `${args.renters_id_fkey}`,
+              `${args.renter_email}`,
+              `${args.renter_country}`
+            ]
+          )
+          .then(data => {
+            console.log(data);
+            return data;
+            // success;
+          })
+          .catch(err => {
+            return "the error is", err;
+          });
+      }
+    },
+    addStore: {
+      type: StoreType,
+      args: {
+        id: { type: GraphQLID },
+        renters_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
+      },
+      resolve(parentValue, args) {
+        return db.conn
+          .any(
+            `INSERT INTO public."stores"
+            (renters_id_fkey) VALUES($1) RETURNING stores_id`,
+            [`${args.renters_id_fkey}`]
+          )
+          .then(data => {
+            console.log("data");
+            let data_id = data[0];
+            console.log(data[0]);
+            return data_id;
+            // success; .then(user => {
+          })
+          .catch(err => {
+            return "the error is", err;
+          });
+      }
+    },
+    //not done
+    addStoreDetails: {
+      type: StoreDetailsType,
+      args: {
+        stores_details_id: { type: GraphQLID },
+        stores_id_fkey: { type: new GraphQLNonNull(GraphQLID) },
+        store_name: { type: new GraphQLNonNull(GraphQLString) },
+        locations_countries_id_fkey: { type: GraphQLID },
+        locations_cities_id_fkey: { type: GraphQLID },
+        store_address: { type: new GraphQLNonNull(GraphQLString) },
+        store_phone: { type: new GraphQLNonNull(GraphQLInt) },
+        store_phone_country_code: { type: GraphQLInt },
+        store_website: { type: GraphQLString },
+        store_description: { type: new GraphQLNonNull(GraphQLString) },
+        store_hours: { type: new GraphQLNonNull(GraphQLString) },
+        store_email: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parentValue, args) {
+        return db.conn
+          .any(
+            `INSERT INTO public."stores_details"(
+              stores_id_fkey, 
+              store_name,
+               locations_countries_id_fkey, 
+               locations_cities_id_fkey,  
+               store_address, 
+              store_phone, 
+              store_phone_country_code, 
+               store_website, 
+               store_description, 
+               store_hours,
+                store_email) VALUES($1, $2, $3, $4, $5, $6, $7,$8, $9, $10, $11) RETURNING stores_details_id`,
+            [
+              `${args.stores_id_fkey}`,
+              `${args.store_name}`,
+              `${args.locations_countries_id_fkey}`,
+              `${args.locations_cities_id_fkey}`,
+              `${args.store_address}`,
+              `${args.store_phone}`,
+              `${args.store_phone_country_code}`,
+              `${args.store_website}`,
+              `${args.store_description}`,
+              `${args.store_hours}`,
+              `${args.store_email}`
+            ]
+          )
+          .then(data => {
+            console.log(data);
+            return "success";
+            // success;
+          })
+          .catch(err => {
+            return "the error is", err;
+          });
+      }
+    },
     addBikeToUser: {
       type: BikeType,
       args: {
         id: { type: GraphQLID },
         users_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
-        // bikes_id_fkey: { type: new GraphQLNonNull(GraphQLInt) }
-        // maker: { type: new GraphQLNonNull(GraphQLString) },
-        // model: { type: new GraphQLNonNull(GraphQLString) },
-        // year: { type: new GraphQLNonNull(GraphQLInt) },
-        // description: { type: new GraphQLNonNull(GraphQLString) },
-        // condition: { type: new GraphQLNonNull(GraphQLString) },
-        // transmission: { type: new GraphQLNonNull(GraphQLInt) },
-        // location: { type: new GraphQLNonNull(GraphQLString) },
-        // star_rating: { type: new GraphQLNonNull(GraphQLInt) },
-        // bike_price: { type: new GraphQLNonNull(GraphQLInt) }
       },
       resolve(parentValue, args) {
         return db.conn

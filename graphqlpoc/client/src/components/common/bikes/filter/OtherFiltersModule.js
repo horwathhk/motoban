@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 
 const button = {
-  backgroundColor: "transparent",
+  backgroundColor: "white",
   color: "black",
   marginBottom: "25px",
   marginTop: "10px"

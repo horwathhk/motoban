@@ -28,7 +28,7 @@ const row = {
 
 const googleMap = {
   overflow: "hidden",
-  background: "#f6ffec"
+  background: "#76a2b2"
 };
 
 const container = {
