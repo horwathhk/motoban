@@ -27,6 +27,8 @@ CREATE INDEX idx_b ON b (a_id);
 explain analyze DELETE FROM a WHERE a_id = 11;
 
 
+
+
 -- *******************************
 -- SEE ALL THE INDEXES OF A TABLE
 -- *******************************

@@ -19,7 +19,7 @@ CREATE EXTENSION citext;
 CREATE TABLE public.users
 ( -- column tetris complete
     users_id BIGSERIAL PRIMARY KEY,
-    password text COLLATE pg_catalog."default" NOT NULL,
+    users_password text COLLATE pg_catalog."default" NOT NULL,
     username citext COLLATE pg_catalog."default" NOT NULL,
     users_email citext COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT users_username_key UNIQUE (username),
@@ -29,7 +29,6 @@ WITH (OIDS = FALSE)
 TABLESPACE pg_default;
 ALTER TABLE public.users OWNER to postgres;
 GRANT ALL ON TABLE public.users TO aaron;
-GRANT ALL ON TABLE public.users TO postgres;
 GRANT ALL ON TABLE public.users TO shan;
 COMMENT ON TABLE users IS 'A table of all Motobay users.';
 COMMENT ON COLUMN users.username IS 'A unique string or email for the user to use in login attempts.';
@@ -54,9 +53,8 @@ CREATE TABLE public.users_details
 WITH (OIDS = FALSE)
 TABLESPACE pg_default;
 ALTER TABLE public.users_details OWNER to postgres;
-GRANT ALL ON TABLE public.users TO aaron;
-GRANT ALL ON TABLE public.users TO postgres;
-GRANT ALL ON TABLE public.users TO shan;
+GRANT ALL ON TABLE public.users_details TO aaron;
+GRANT ALL ON TABLE public.users_details TO shan;
 COMMENT ON TABLE public.users_details IS 'Table stores the timestamp of when the user joined, and any future profile information we need.';
 COMMENT ON COLUMN public.users_details.users_id_fkey IS 'This column is both the primary key for the table, and a fKey to the users table in a one-to-one relationship';
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -94,8 +92,6 @@ CREATE TABLE public.bikes_models
     bikes_models_name text COLLATE pg_catalog."default" NOT NULL,
     bikes_models_id SERIAL2 PRIMARY KEY,
     bikes_makers_id_fkey smallint NOT NULL,
-    CONSTRAINT bikes_models_name_key UNIQUE (bikes_models_name)
-,
     CONSTRAINT bikes_models__bikes_makers_id_fkey FOREIGN KEY (bikes_makers_id_fkey)
         REFERENCES public.bikes_makers (bikes_makers_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -285,14 +281,12 @@ CREATE TABLE public.renters_details
     renters_details_id SERIAL PRIMARY KEY,
     renters_id_fkey integer NOT NULL,
     renter_email_primary text COLLATE pg_catalog."default" NOT NULL,
-    renter_email_secondary text COLLATE pg_catalog."default",
     CONSTRAINT renters_details__renters_id_fkey FOREIGN KEY (renters_id_fkey)
         REFERENCES public.renters (renters_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
-WITH (OIDS = FALSE)
-TABLESPACE pg_default;
+WITH (OIDS = FALSE) TABLESPACE pg_default;
 ALTER TABLE public.renters_details OWNER to postgres;
 GRANT ALL ON TABLE public.renters_details TO aaron;
 GRANT ALL ON TABLE public.renters_details TO postgres;
@@ -589,3 +583,98 @@ ALTER TABLE public.rental_contracts_coupon_codes OWNER to postgres;
 GRANT ALL ON TABLE public.rental_contracts_coupon_codes TO aaron;
 GRANT ALL ON TABLE public.rental_contracts_coupon_codes TO postgres;
 GRANT ALL ON TABLE public.rental_contracts_coupon_codes TO shan;
+
+
+
+-- Now grant access to all the sequences --- nevermind, dont need it
+-- GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.locations_countries_countries_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.locations_countries_countries_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO shan;
+-- GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO aaron;
+-- GRANT ALL ON SEQUENCE public.users_users_id_seq TO shan;
+
+
+
+INSERT INTO public.bikes_makers(bikes_makers_name)
+	VALUES 
+        ('Yamaha'),
+        ('Honda'),
+        ('BMW'),
+        ('Kawasaki'),
+        ('Suzuki'),
+        ('Aprilla'),
+        ('Daelim'),
+        ('Janus'),
+        ('Vespa')
+;
+INSERT INTO public.bikes_models(bikes_models_name, bikes_makers_id_fkey)
+	VALUES 
+        ('Nuovo',1), -- yamaha
+        ('Classico',1), -- yamaha
+        ('Jupiter',1), -- yamaha
+        ('Other',1), -- yamaha
+        ('Air Blade',2), -- honda
+        ('Win',2), -- honda
+        ('Wave',2), -- honda
+        ('Dream',2), -- honda
+        ('Future',2), -- honda
+        ('Cub',2), -- honda
+        ('Other',2), -- honda
+        ('Gryffin',8), -- janus
+        ('Phoenix',8) -- janus
+;
+INSERT INTO public.bikes_conditions(bikes_conditions_type, bikes_conditions_description)
+	VALUES ('Brand New', 'Bike has never been used, less than 30Km of travel.'),
+	('Excellent', 'No scratches, no imperfections, engine idles without cutting off, bike appearance is clean, extremely reliable.'),
+	('Very good', 'Minimal wear and imperfections, engine idles without cutting off, bike appearance is clean, reliable with no irregularities.'),
+	('Fair', 'Run well, some wear and imperfections, engine may need to restart when idling, otherwise reliable.'),
+	('Worn', 'Has some issues, but the engine runs and a user can ride the bike with some precautions.'),
+	('Fixer Upper', 'Bike is not operable and requires mechanical attention.'),
+	('Scrap', 'Bike is not fixable but can be used for parts.')
+;
+INSERT INTO public.locations_countries(iso, country_name, country_nicename, iso3, three_letter_currency_code, numcode, phonecode)
+    VALUES ('VN','Vietnam','V','VNM','VND',817,84),
+    ('TH','Thailand','T','THA','BHT',231,55)
+;
+INSERT INTO public.locations_cities(locations_cities_airportcode,locations_cities_cityname,locations_countries_id_fkey)
+    VALUES ('DAD','Da Nang',1),
+    ('SGN','Saigon',1),
+    ('BKK','Bangkok',2)
+;
+
+-- for reference:
+-- INSERT INTO public.stores(
+-- renters_id_fkey, locations_cities_id_fkey, stores_geography_coordinates)
+-- 	VALUES (1, 1, 'SRID=4326;POINT(108.24287058201048 16.074765847235792)');

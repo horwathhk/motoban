@@ -59,8 +59,36 @@ def generateRandomUsername():
     return name
 
 def generateRandomBikeManufacturerFKey():
-    makers_id = [1,2,4,5,6,7,8,9]
+    # assumes the following INSERT:
+    # INSERT INTO ... VALUES ('Yamaha'),('Honda'),('BMW'),('Kawasaki'),('Suzuki'),('Aprilla'),('Daelim'),('Janus'),('Vespa');
+    makers_id = [1,2,3,4,5,6,7,8]
     return makers_id[random.randint(1,len(makers_id)-1)]
+
+def generateRandomBikeModelFKey(maker_fkey):
+    if(maker_fkey == 1):
+        # yamaha
+        return random.randint(1,4)
+    if(maker_fkey == 2):
+        # honda
+        return random.randint(5,10)
+    return random.randint(11,12)
+
+def getRandomCoordinatesInVnOrThai(city_fkey):
+    if(city_fkey==1):
+        # coordinates in danang
+        rand_variance_lat = random.randint(6033,7476)
+        rand_variance_long = random.randint(1001,2428)
+        return 'SRID=4326;POINT(108.' + str(rand_variance_long) + ' 16.0' + str(rand_variance_lat) + ')'
+    if(city_fkey==2):
+        # coordinates in saigon
+        rand_variance_lat = random.randint(3311,9999)
+        rand_variance_long = random.randint(3001,6668)
+        return 'SRID=4326;POINT(106.' + str(rand_variance_long) + ' 10.7' + str(rand_variance_lat) + ')'
+    if(city_fkey==3):
+        # coordinates in bangkok
+        rand_variance_lat = random.randint(5955,7563)
+        rand_variance_long = random.randint(4555,5100)
+        return 'SRID=4326;POINT(100.' + str(rand_variance_long) + ' 13' + str(rand_variance_lat) + ')'
 
 def getRandoStoreName():
     listOfAdjectives = [
@@ -186,7 +214,7 @@ def getRandoTransmission():
 
 def insert_user(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO users(username,password,email)
+    sql_query = """INSERT INTO users(username,users_password,users_email)
              VALUES (%s, %s, %s) RETURNING users_id;
              """
     conn = None
@@ -216,8 +244,8 @@ def insert_user(sql_vals):
 
 def insert_user_details(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO users_details(users_id_fkey)
-             VALUES (%s) RETURNING users_details_id;
+    sql_query = """INSERT INTO users_details(users_id_fkey, users_details_signup_timestamp)
+             VALUES (%s, current_timestamp) RETURNING users_id_fkey;
              """
     conn = None
     users_details_id = None
@@ -246,8 +274,13 @@ def insert_user_details(sql_vals):
 
 def insert_bike(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO bikes(users_id_fkey)
-             VALUES (%s) RETURNING bikes_id;
+    sql_query = """INSERT INTO bikes(users_id_fkey, 
+                                    bikes_makers_id_fkey, 
+                                    bikes_models_id_fkey, 
+                                    bikes_year, 
+                                    transmission,
+                                    bikes_conditions_id_fkey)
+             VALUES (%s,%s,%s,%s,%s,%s) RETURNING bikes_id;
              """
     conn = None
     bike_id = None
@@ -306,8 +339,8 @@ def insert_bike_details(sql_vals):
 
 def insert_renter(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO renters(users_id_fkey)
-             VALUES (%s) RETURNING renters_id;
+    sql_query = """INSERT INTO renters(users_id_fkey,city_fkey,isPremium)
+             VALUES (%s,%s,0) RETURNING renters_id;
              """
     conn = None
     renter_id = None
@@ -336,8 +369,8 @@ def insert_renter(sql_vals):
 
 def insert_store(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO stores(renters_id_fkey)
-             VALUES (%s) RETURNING stores_id;
+    sql_query = """INSERT INTO stores(renters_id_fkey, locations_cities_id_fkey,stores_geography_coordinates geography)
+             VALUES (%s,%s,%s) RETURNING stores_id;
              """
     conn = None
     store_id = None
@@ -517,59 +550,85 @@ def insert_rental_contract(sql_vals):
 
 def createNewUsers(howMany):
     print('creating ' + str(howMany) + ' users...')
-    for i in range(1,howMany):
-        new_username = generateRandomUsername()
-        new_email = new_username + '@test.com'
-        new_password = 'kembo123!'
-        new_maker = generateRandomBikeManufacturerFKey()
+    for i in range(1,howMany+1):
+        rand_username = generateRandomUsername()
+        rand_email = rand_username + '@test.com'
+        rand_password = 'kembo123!'
+        rand_maker_fkey = generateRandomBikeManufacturerFKey()
+        rand_model_fkey = generateRandomBikeModelFKey(rand_maker_fkey)
+        rand_year = random.randint(1960, 2019)
+        rand_trans = random.randint(1,3)
+        rand_bikes_conditions_fkey = random.randint(1,7)
 
-        new_user_id = insert_user([new_username, new_password, new_email])
+        new_user_id = insert_user([rand_username, rand_password, rand_email])
         new_user_details_id = insert_user_details([new_user_id])
-        new_bike_id = insert_bike([new_user_id])
-        new_bike_details_id = insert_bike_details([new_bike_id, new_maker])
+        new_bike_id = insert_bike([new_user_id,rand_maker_fkey, rand_model_fkey, rand_year, rand_trans, rand_bikes_conditions_fkey])
     print('finished creating ' + str(howMany) + ' users')
 
 def createNewRenters(howMany):
     print('creating ' + str(howMany) + ' users...')
     for i in range(0,howMany):
-        new_username = generateRandomUsername()
-        new_email = new_username + '@test.com'
-        new_password = 'kembo123!'
-        new_maker = generateRandomBikeManufacturerFKey()
+        rand_username = generateRandomUsername()
+        rand_email = rand_username + '@test.com'
+        rand_password = 'kembo123!'
+        rand_maker_fkey1 = generateRandomBikeManufacturerFKey()
+        rand_maker_fkey2 = generateRandomBikeManufacturerFKey()
+        rand_maker_fkey3 = generateRandomBikeManufacturerFKey()
+        rand_maker_fkey4 = generateRandomBikeManufacturerFKey()
+        rand_maker_fkey5 = generateRandomBikeManufacturerFKey()
+        rand_model_fkey1 = generateRandomBikeModelFKey(rand_maker_fkey1)
+        rand_model_fkey2 = generateRandomBikeModelFKey(rand_maker_fkey2)
+        rand_model_fkey3 = generateRandomBikeModelFKey(rand_maker_fkey3)
+        rand_model_fkey4 = generateRandomBikeModelFKey(rand_maker_fkey4)
+        rand_model_fkey5 = generateRandomBikeModelFKey(rand_maker_fkey5)
+        rand_year1 = random.randint(1960, 2019)
+        rand_year2 = random.randint(1960, 2019)
+        rand_year3 = random.randint(1960, 2019)
+        rand_year4 = random.randint(1960, 2019)
+        rand_year5 = random.randint(1960, 2019)
+        rand_trans1 = random.randint(1,3)
+        rand_trans2 = random.randint(1,3)
+        rand_trans3 = random.randint(1,3)
+        rand_trans4 = random.randint(1,3)
+        rand_trans5 = random.randint(1,3)
+        rand_bikes_conditions_fkey1 = random.randint(1,7)
+        rand_bikes_conditions_fkey2 = random.randint(1,7)
+        rand_bikes_conditions_fkey3 = random.randint(1,7)
+        rand_bikes_conditions_fkey4 = random.randint(1,7)
+        rand_bikes_conditions_fkey5 = random.randint(1,7)
 
-        new_user_id = insert_user([new_username, new_password, new_email])
+
+        rand_city_fkey = random.randint(1,3)
+        rand_coordinates_inVnTh = getRandomCoordinatesInVnOrThai(rand_city_fkey)
+
+        new_user_id = insert_user([rand_username, rand_password, rand_email])
         new_user_details_id = insert_user_details([new_user_id])
-        new_bike1_id = insert_bike([new_user_id])
-        new_bike2_id = insert_bike([new_user_id])
-        new_bike3_id = insert_bike([new_user_id])
-        new_bike4_id = insert_bike([new_user_id])
-        new_bike5_id = insert_bike([new_user_id])
-        new_bike1_details_id = insert_bike_details([new_bike1_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
-        new_bike2_details_id = insert_bike_details([new_bike2_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
-        new_bike3_details_id = insert_bike_details([new_bike3_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
-        new_bike4_details_id = insert_bike_details([new_bike4_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
-        new_bike5_details_id = insert_bike_details([new_bike5_id, new_maker, getRandoBikeCondition(), getRandoYear(), getRandoTransmission()])
-        
-        new_renter_id = insert_renter([new_user_id])
-        new_store_id = insert_store([new_renter_id])
+        new_bike1_id = insert_bike([new_user_id,rand_maker_fkey1, rand_model_fkey1, rand_year1, rand_trans1, rand_bikes_conditions_fkey1])
+        new_bike2_id = insert_bike([new_user_id,rand_maker_fkey2, rand_model_fkey2, rand_year2, rand_trans2, rand_bikes_conditions_fkey2])
+        new_bike3_id = insert_bike([new_user_id,rand_maker_fkey3, rand_model_fkey3, rand_year3, rand_trans3, rand_bikes_conditions_fkey3])
+        new_bike4_id = insert_bike([new_user_id,rand_maker_fkey4, rand_model_fkey4, rand_year4, rand_trans4, rand_bikes_conditions_fkey4])
+        new_bike5_id = insert_bike([new_user_id,rand_maker_fkey5, rand_model_fkey5, rand_year5, rand_trans5, rand_bikes_conditions_fkey5])
 
-        rando_country = getRandoCountry()
-        rando_store_name = getRandoStoreName()
-        new_store_details_id = insert_store_details([new_store_id, rando_store_name, rando_country, getRandoCity([rando_country]), getRandoStoreEmail(rando_store_name), getRandoStoreAddress()])
+        new_renter_id = insert_renter([new_user_id, rand_city_fkey])
+        new_store_id = insert_store([new_renter_id, rand_city_fkey, rand_coordinates_inVnTh])
 
-        new_rental_bike1_id = insert_rental_bike([new_bike1_id, new_renter_id])
-        new_rental_bike2_id = insert_rental_bike([new_bike2_id, new_renter_id])
-        new_rental_bike3_id = insert_rental_bike([new_bike3_id, new_renter_id])
-        new_rental_bike4_id = insert_rental_bike([new_bike4_id, new_renter_id])
-        new_rental_bike5_id = insert_rental_bike([new_bike5_id, new_renter_id])
-        new_bikes_rentals1_location = insert_bikes_rentals_location([new_rental_bike1_id,new_store_id])
-        new_bikes_rentals2_location = insert_bikes_rentals_location([new_rental_bike2_id,new_store_id])
-        new_bikes_rentals3_location = insert_bikes_rentals_location([new_rental_bike3_id,new_store_id])
-        new_bikes_rentals4_location = insert_bikes_rentals_location([new_rental_bike4_id,new_store_id])
-        new_bikes_rentals5_location = insert_bikes_rentals_location([new_rental_bike5_id,new_store_id])
-        rando_rentee = select_random_user([new_user_id]) # anyone except this renter
-        new_rental_contract = insert_rental_contract([new_renter_id, rando_rentee, new_store_id, new_rental_bike3_id])
+        # rando_country = getRandoCountry()
+        # rando_store_name = getRandoStoreName()
+        # new_store_details_id = insert_store_details([new_store_id, rando_store_name, rando_country, getRandoCity([rando_country]), getRandoStoreEmail(rando_store_name), getRandoStoreAddress()])
+
+        # new_rental_bike1_id = insert_rental_bike([new_bike1_id, new_renter_id])
+        # new_rental_bike2_id = insert_rental_bike([new_bike2_id, new_renter_id])
+        # new_rental_bike3_id = insert_rental_bike([new_bike3_id, new_renter_id])
+        # new_rental_bike4_id = insert_rental_bike([new_bike4_id, new_renter_id])
+        # new_rental_bike5_id = insert_rental_bike([new_bike5_id, new_renter_id])
+        # new_bikes_rentals1_location = insert_bikes_rentals_location([new_rental_bike1_id,new_store_id])
+        # new_bikes_rentals2_location = insert_bikes_rentals_location([new_rental_bike2_id,new_store_id])
+        # new_bikes_rentals3_location = insert_bikes_rentals_location([new_rental_bike3_id,new_store_id])
+        # new_bikes_rentals4_location = insert_bikes_rentals_location([new_rental_bike4_id,new_store_id])
+        # new_bikes_rentals5_location = insert_bikes_rentals_location([new_rental_bike5_id,new_store_id])
+        # rando_rentee = select_random_user([new_user_id]) # anyone except this renter
+        # new_rental_contract = insert_rental_contract([new_renter_id, rando_rentee, new_store_id, new_rental_bike3_id])
     print('finished creating ' + str(howMany) + ' renters')
 
-# createNewUsers(15)
+# createNewUsers(5)
 createNewRenters(20)
