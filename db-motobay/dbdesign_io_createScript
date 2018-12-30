@@ -1,29 +1,36 @@
 Table users {
-  users_id int8 PK // bigserial
   username varchar // text --- with constraint on table... CHECK(char_length(x)>7 AND char_length(x)<=100) and use frontend to give user the option to use email as username. and username must be unique
   password varchar  // text with constraints CHECK(char_length(x)>5 AND char_length(x)<=21) and use regex on front end
-  email varchar // CHECK(char_length(x)>7 AND char_length(x)<=100 AND x LIKE '%@%.%')  email also needs to be unique, no dupes for security reasons
+  users_email varchar // CHECK(char_length(x)>7 AND char_length(x)<=100 AND x LIKE '%@%.%')  email also needs to be unique, no dupes for security reasons
+  users_id int8 PK // bigserial or uuid
+}
+
+Table users_details {
+  users_id_fkey int8 PK // and its the foreign key
+  users_details_joindate timestamp 
+  //users_details_avatar_photo varchar // a string referencing the path to the image
+  
 }
 
 
 
 
 Table bikes_makers {
-  bikes_makers_id int2 PK // smallserial (less than 32,767 makers)
   bikes_makers_name varchar // text
+  bikes_makers_id int2 PK // smallserial (less than 32,767 makers)
 }
 
 Table bikes_models {
-  bikes_models_id int PK // smallserial (less than 32,767 bike models)
-  bikes_makers_id_fkey int2 // smallint
   bikes_models_name varchar //text
+  bikes_models_id int2 PK // smallserial (less than 32,767 bike models)
+  bikes_makers_id_fkey int2 // smallint
 }
 Ref: bikes_models.bikes_makers_id_fkey > bikes_makers.bikes_makers_id
 
 Table bikes_conditions {
-  bikes_conditions_id int2 PK //smallserial
   bikes_conditions_type varchar //text
   bikes_conditions_description varchar //text
+  bikes_conditions_id int2 PK //smallserial
 }
 
 Table bikes {
@@ -44,64 +51,38 @@ Ref: bikes.bikes_conditions_id_fkey > bikes_conditions.bikes_conditions_id
 
 
 
+
 Table locations_countries {
-  locations_countries_id int2 PK  // There are only 192 countries in the world
   locations_countries_name varchar
   locations_countries_iso varchar
   locations_countries_iso3 varchar
+  three_letter_currency_code varchar
+  locations_countries_id int2 PK  // There are only 192 countries in the world
   locations_countries_numcode int2
   locations_countries_phonecode int2
 }
 
 Table locations_cities {
+  locations_cities_cityname varchar
+  locations_cities_airportcode varchar
   locations_cities_id int4 PK // 2,5 million cities is an exaggerated number for cities as population>100,000. As for small towns and villages, these can indeed add to almost 2,5 million.
   locations_countries_id_fkey int2
-  locations_cities_name varchar
-  locations_cities_airportcode varchar
 }
 Ref: locations_cities.locations_countries_id_fkey > locations_countries.locations_countries_id
 
-Table currencies {
-  currencies_id int2 PK
-  locations_countries_id_fkey int2
-  currencies_three_letter_currency_code varchar
-  currencies_ascii_string varchar
-  // ?
-}
-Ref: currencies.locations_countries_id_fkey - locations_countries.locations_countries_id
 
 
-
-
-
-Table bikes_rentals {
-  bikes_rentals_id int8 PK // bigserial
-  bikes_id_fkey int8 // bigint
-}
-Ref: bikes_rentals.bikes_id_fkey - bikes.bikes_id
-
-Table bikes_rentals_pricing {
-  bikes_rentals_pricing_id int8 PK // bigserial
-  bikes_rentals_id_fkey int8
-  bikes_rentals_pricePerDay int2 // smallint
-  bikes_rentals_pricePerWeek int2 // smallint
-  bikes_rentals_pricePerMonth int2 // smallint
-  currencies_id_fkey int2 //smallint
-}
-Ref: bikes_rentals_pricing.bikes_rentals_id_fkey - bikes_rentals.bikes_rentals_id
 
 
 
 Table renters {
-  renters_id int4 PK // serial
+  renters_id int4 PK // serial or uuid
   users_id_fkey int8 // bigint
   locations_cities_id_fkey int4
-  locations_countries_id_fkey int2 
   renters_isPremium boolean // not null
 }
 Ref: renters.users_id_fkey > users.users_id
 Ref: renters.locations_cities_id_fkey > locations_cities.locations_cities_id
-Ref: renters.locations_countries_id_fkey > locations_countries.locations_countries_id
 
 Table renters_premium_log { // maybe this table belongs in other DB? 
   renters_premium_id int8 PK 
@@ -120,14 +101,15 @@ Table renters_details {
 Ref: renters_details.renters_id_fkey - renters.renters_id
 
 Table stores {
-  stores_id int4 PK 
+  stores_email varchar // Not null, can be same or separate email from owner
+  stores_id int4 PK // 
   renters_id_fkey int4
   locations_cities_id_fkey int4
 }
 Ref: stores.renters_id_fkey > renters.renters_id
 
 Table stores_signin {
-  stores_signin_id int4 PK
+  stores_signin_id int4 PK 
   stores_id_fkey int4
   stores_password varchar
 }
@@ -136,14 +118,13 @@ Ref: stores_signin.stores_id_fkey - stores.stores_id
 Table stores_details {
   stores_details_id int4 PK 
   stores_id_fkey int4
-  
   stores_details_name varchar
   stores_details_address varchar // or consider object type to store address
   stores_details_phone varchar // check 
   stores_details_phone_country_code varchar // check
   stores_details_website varchar // check
   stores_details_description varchar
-  stores_details_email varchar // Not null, can be same or separate email from owner
+  
   locations_countries_id_fkey int2
   stores_details_hours_start int2 // format 0800 for 8am
   stores_details_hours_end int2 // format 2130 for 9:30pm
@@ -153,13 +134,33 @@ Ref: stores_details.stores_id_fkey - stores.stores_id
 Ref: stores_details.locations_countries_id_fkey > locations_countries.locations_countries_id
 
 
-Table bikes_rentals_locations_current { // we should make a different table for logs of history. timestamps in logs
-  bikes_rentals_locations_id int8 PK //bigserial 
-  bikes_rentals_id_fkey int8 //bigint 
-  stores_id_fkey int4 //int
+
+
+
+
+
+
+
+
+
+
+Table bikes_rentals {
+  bikes_rentals_id int8 PK // bigserial
+  bikes_id_fkey int8 // bigint
+  renters_id_fkey int4
+  stores_id_fkey int4 // this is the current location of the bike
+  bikes_rentals_isAvailable boolean
+  bikes_rentals_pricePerDay int8 // smallint
+  bikes_rentals_pricePerWeek int8 // smallint
+  bikes_rentals_pricePerMonth int8 // smallint
 }
-Ref: bikes_rentals_locations_current.bikes_rentals_id_fkey > bikes_rentals.bikes_rentals_id
-Ref: bikes_rentals_locations_current.stores_id_fkey > stores.stores_id
+Ref: bikes_rentals.bikes_id_fkey - bikes.bikes_id
+Ref: bikes_rentals.renters_id_fkey - renters.renters_id
+
+
+
+
+
 
 
 Table rental_contracts {
@@ -168,7 +169,6 @@ Table rental_contracts {
   users_id_fkey int8
   renters_id_fkey int4 
   stores_id_fkey int4
-  
 }
 Ref: rental_contracts.renters_id_fkey > renters.renters_id
 Ref: rental_contracts.users_id_fkey > users.users_id
@@ -176,54 +176,55 @@ Ref: rental_contracts.stores_id_fkey > stores.stores_id
 Ref: rental_contracts.bikes_rentals_id_fkey > bikes_rentals.bikes_rentals_id
 
 
+Table rental_contracts_payments_status {
+  rental_contracts_payments_status_id int8 PK 
+  rental_contracts_payments_status_name varchar
+  rental_contracts_payments_status_description varchar
+}
+
 Table rental_contracts_dates {
   rental_contracts_dates_id int8 PK 
   rental_contracts_id_fkey int8
   rental_contracts_dates_timestamp timestamp
-  startdate datetime
-  enddate datetime
-  rental_contracts_dates_price_per_day int4
-  rental_contracts_dates_total_price_of_dates int4
-  rental_contracts_dates_number_of_days int2
-  currencies_id_fkey int2
+  rental_contracts_startdate datetime
+  rental_contracts_enddate datetime
+  rental_contracts_dates_payments_datetime datetime //null
+  rental_contracts_dates_price_per_day int8
+  rental_contracts_dates_total_price_of_dates int8
+  rental_contracts_dates_num_of_days int2
+  rental_contracts_payments_status_id_fkey int2
   rental_contracts_dates_isExtension boolean
   rental_contracts_dates_isOwnerApproved boolean
   rental_contracts_dates_isRenterApproved boolean
- 
+  rental_contracts_dates_isPaidFinalCheck boolean 
 }
 Ref: rental_contracts_dates.rental_contracts_id_fkey > rental_contracts.rental_contracts_id
-Ref: rental_contracts_dates.currencies_id_fkey > currencies.currencies_id
+Ref: rental_contracts_dates.rental_contracts_payments_status_id_fkey > rental_contracts_payments_status.rental_contracts_payments_status_id
 
-Table rental_contracts_payment_status {
-  rental_contracts_payment_status_id int8 PK 
-  rental_contracts_payment_status_name varchar
-  rental_contracts_payment_status_description varchar
-}
 
-Table rental_contracts_payments {
-  rental_contracts_payments int8 PK 
-  rental_contracts_id_fkey int8
-  rental_contracts_total_price int4
-  rental_contracts_payment_status_id_fkey int2 // pending, paid, denied, etc. preset list of payment statuses
-  currencies_id_fkey int2
-}
-Ref: rental_contracts_payments.rental_contracts_id_fkey > rental_contracts.rental_contracts_id
-Ref: rental_contracts_payments.rental_contracts_payment_status_id_fkey > rental_contracts_payment_status.rental_contracts_payment_status_id
-Ref: rental_contracts_payments.currencies_id_fkey - currencies.currencies_id
+
+
 
 Table rental_contracts_partial_refunds {
   rental_contracts_partial_refunds_id int8 PK 
   rental_contracts_id_fkey int8
   rental_contracts_partial_refunds_amount int4
-  currencies_id_fkey int2
 }
 Ref: rental_contracts_partial_refunds.rental_contracts_id_fkey > rental_contracts.rental_contracts_id
 
 Table rental_contracts_coupon_codes { // id works on frontend only and update per the rental_contracts_dates_total_price_of_dates 
   rental_contracts_coupon_codes_id int8 PK 
+  rental_contracts_coupon_codes_validUntil datetime // can be null
   rental_contracts_coupon_codes_code varchar // unique string
-  rental_contracts_coupon_codes_amount int2 // depends on type
+  rental_contracts_coupon_codes_amount int8 // depends on type
   rental_contracts_coupon_codes_type int2 // percentage off, or $ off. check to be 0 or 1. 0 is percentage and 1 is dollars off
-  rental_contracts_coupon_codes_isValid boolean
+  rental_contracts_coupon_codes_isPercent boolean
 }
+
+
+
+
+
+
+
 
