@@ -180,7 +180,7 @@ CREATE TABLE public.locations_countries
     country_nicename text COLLATE pg_catalog."default",
     iso3 text COLLATE pg_catalog."default",
     three_letter_currency_code text COLLATE pg_catalog."default",
-    countries_id SERIAL2 PRIMARY KEY,
+    locations_countries_id SERIAL2 PRIMARY KEY,
     numcode smallint,
     phonecode smallint NOT NULL
 )
@@ -206,7 +206,7 @@ CREATE TABLE public.locations_cities
     CONSTRAINT locations_cities_locations_cities_airportcode_key UNIQUE (locations_cities_airportcode)
 ,
     CONSTRAINT locations_cities__locations_countries_id_fkey FOREIGN KEY (locations_countries_id_fkey)
-        REFERENCES public.locations_countries (countries_id) MATCH SIMPLE
+        REFERENCES public.locations_countries (locations_countries_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -269,9 +269,9 @@ CREATE TABLE public.renters_premium_log
 WITH (OIDS = FALSE)
 TABLESPACE pg_default;
 ALTER TABLE public.renters_premium_log OWNER to postgres;
-GRANT ALL ON TABLE public.renters TO aaron;
-GRANT ALL ON TABLE public.renters TO postgres;
-GRANT ALL ON TABLE public.renters TO shan;
+GRANT ALL ON TABLE public.renters_premium_log TO aaron;
+GRANT ALL ON TABLE public.renters_premium_log TO postgres;
+GRANT ALL ON TABLE public.renters_premium_log TO shan;
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 -- CREATE INDEX for renters/users
 CREATE INDEX idx_renters_premium__renters_id_fkey ON renters_premium_log (renters_id_fkey);
@@ -284,7 +284,7 @@ CREATE TABLE public.renters_details
 (
     renters_details_id SERIAL PRIMARY KEY,
     renters_id_fkey integer NOT NULL,
-    renter_email_primary text COLLATE pg_catalog."default" NOT NULL,
+    renters_email_primary text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT renters_details__renters_id_fkey FOREIGN KEY (renters_id_fkey)
         REFERENCES public.renters (renters_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -353,9 +353,9 @@ CREATE TABLE public.stores_signin
 )
 WITH (OIDS = FALSE) TABLESPACE pg_default;
 ALTER TABLE public.stores_signin OWNER to postgres;
-GRANT ALL ON TABLE public.stores TO aaron;
-GRANT ALL ON TABLE public.stores TO postgres;
-GRANT ALL ON TABLE public.stores TO shan;
+GRANT ALL ON TABLE public.stores_signin TO aaron;
+GRANT ALL ON TABLE public.stores_signin TO postgres;
+GRANT ALL ON TABLE public.stores_signin TO shan;
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 -- CREATE INDEX for stores_id_fkey
 CREATE INDEX idx_stores_signin__stores_id_fkey ON stores_signin (stores_id_fkey);
@@ -375,13 +375,18 @@ CREATE TABLE public.stores_details
     store_description text COLLATE pg_catalog."default",
     stores_details_email text COLLATE pg_catalog."default" NOT NULL,
     stores_details_id BIGSERIAL PRIMARY KEY,
-    locations_countries_id_fkey integer NOT NULL,
+    locations_countries_id_fkey smallint NOT NULL,
+    locations_cities_id_fkey smallint NOT NULL,
     stores_id_fkey integer NOT NULL,
     stores_details_phone_country_code integer,
     stores__details_hours_start smallint,
     stores_details_hours_end smallint,
     CONSTRAINT stores_details__locations_countries_id_fkey FOREIGN KEY (locations_countries_id_fkey)
-        REFERENCES public.locations_countries (countries_id) MATCH SIMPLE
+        REFERENCES public.locations_countries (locations_countries_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT stores_details__locations_cities_id_fkey FOREIGN KEY (locations_countries_id_fkey)
+        REFERENCES public.locations_cities (locations_cities_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT stores_details__stores_id_fkey FOREIGN KEY (stores_id_fkey)
@@ -411,14 +416,15 @@ CREATE TABLE public.bikes_rentals
 (-- column tetris complete 
     bikes_rentals_id BIGSERIAL PRIMARY KEY,
     bikes_id_fkey bigint NOT NULL,
-    bikes_rentals_pricePerDay bigint NOT NULL,
-    bikes_rentals_pricePerWeek bigint NOT NULL,
-    bikes_rentals_pricePerMonth bigint NOT NULL,
+    bikes_r_pricePerDay bigint NOT NULL,
+    bikes_r_pricePerWeek bigint NOT NULL,
+    bikes_r_pricePerMonth bigint NOT NULL,
     bikes_r_depositamount bigint NOT NULL, -- use -1 for errors, 0 for no deposit required
     renters_id_fkey integer NOT NULL,
     stores_id_fkey integer NOT NULL,
     locations_countries_id_fkey smallint NOT NULL,
-    bikes_rentals_isAvailable boolean NOT NULL,
+    locations_cities_id_fkey smallint NOT NULL,
+    bikes_r_isAvailable boolean NOT NULL,
     CONSTRAINT bikes_rentals__bikes_id_fkey FOREIGN KEY (bikes_id_fkey)
         REFERENCES public.bikes (bikes_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -429,6 +435,14 @@ CREATE TABLE public.bikes_rentals
         ON DELETE NO ACTION,
     CONSTRAINT bikes_rentals__stores_id_fkey FOREIGN KEY (stores_id_fkey)
         REFERENCES public.stores (stores_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT bikes_rentals__locations_cities_id_fkey FOREIGN KEY (locations_cities_id_fkey)
+        REFERENCES public.locations_cities (locations_cities_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT bikes_rentals__locations_countries_id_fkey FOREIGN KEY (locations_countries_id_fkey)
+        REFERENCES public.locations_countries (locations_countries_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -442,7 +456,7 @@ GRANT ALL ON TABLE public.bikes_rentals TO postgres;
 CREATE INDEX idx_bikes_r__bikes_id_fkey ON bikes_rentals (bikes_id_fkey);
 CREATE INDEX idx_bikes_r__renters_id_fkey ON bikes_rentals (renters_id_fkey);
 CREATE INDEX idx_bikes_r__stores_id_fkey ON bikes_rentals (stores_id_fkey);
-CREATE INDEX idx_bikes_r__bikes_r_pricePerWeek ON bikes_rentals (bikes_rentals_pricePerWeek); -- this index is for query filters on bikes less than a $ amount. doublecheck if that creates a performance boost on the query
+CREATE INDEX idx_bikes_r__bikes_r_pricePerWeek ON bikes_rentals (bikes_r_pricePerWeek); -- this index is for query filters on bikes less than a $ amount. doublecheck if that creates a performance boost on the query
 
 
 
@@ -495,8 +509,8 @@ CREATE INDEX idx_rental_contracts__users_id_fkey ON rental_contracts (users_id_f
 CREATE TABLE public.rental_contracts_payments_status
 (
     rental_contracts_payments_status_id SERIAL2 PRIMARY KEY,
-    rental_contracts_payments_status_ispaid boolean NOT NULL,
-    rental_contracts_payments_status_description text COLLATE pg_catalog."default"
+    r_contracts_payments_status_ispaid boolean NOT NULL,
+    r_contracts_payments_status_description text COLLATE pg_catalog."default"
 )
 WITH (OIDS = FALSE) TABLESPACE pg_default;
 ALTER TABLE public.rental_contracts_payments_status OWNER to postgres;
@@ -511,25 +525,25 @@ GRANT ALL ON TABLE public.rental_contracts_payments_status TO shan;
 CREATE TABLE public.rental_contracts_dates
 (
     rental_contracts_dates_id BIGSERIAL PRIMARY KEY,
-    rental_contracts_id_fkey bigint NOT NULL,
-    rental_contracts_dates_timestamp timestamp with time zone NOT NULL,
-    rental_contracts_dates_startdate date  NOT NULL,
-    rental_contracts_dates_enddate date NOT NULL,
-    rental_contracts_dates_payments_dateReceived date,
-    rental_contracts_dates_price_per_day bigint,
-    rental_contracts_dates_total_price_of_dates bigint,
+    r_contracts_id_fkey bigint NOT NULL,
+    r_contracts_dates_timestamp timestamp with time zone NOT NULL,
+    r_contracts_dates_startdate date  NOT NULL,
+    r_contracts_dates_enddate date NOT NULL,
+    r_contracts_dates_payments_dateReceived date,
+    r_contracts_dates_price_per_day bigint,
+    r_contracts_dates_total_price_of_dates bigint,
     locations_countries_id_fkey smallint,
-    rental_contracts_dates_num_of_days smallint,
-    rental_contracts_payments_status_id_fkey smallint NOT NULL,
-    rental_contracts_dates_isExtension boolean,
-    rental_contracts_dates_isOwnerApproved boolean,
-    rental_contracts_dates_isUserApproved boolean,
-    rental_contracts_dates_isPaidFinalCheck boolean NOT NULL, -- run batch processes after the transaction to verify
-    CONSTRAINT r_contracts_dates__r_contracts_id_fkey FOREIGN KEY (rental_contracts_id_fkey)
+    r_contracts_dates_num_of_days smallint,
+    r_contracts_payments_status_id_fkey smallint NOT NULL,
+    r_contracts_dates_isExtension boolean,
+    r_contracts_dates_isOwnerApproved boolean,
+    r_contracts_dates_isUserApproved boolean,
+    r_contracts_dates_isPaidFinalCheck boolean NOT NULL, -- run batch processes after the transaction to verify
+    CONSTRAINT r_contracts_dates__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
         REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT r_contracts_dates_r_contracts_paym_status_id_fkey FOREIGN KEY (rental_contracts_payments_status_id_fkey)
+    CONSTRAINT r_contracts_dates_r_contracts_paym_status_id_fkey FOREIGN KEY (r_contracts_payments_status_id_fkey)
         REFERENCES public.rental_contracts_payments_status (rental_contracts_payments_status_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -542,8 +556,8 @@ GRANT ALL ON TABLE public.rental_contracts_dates TO postgres;
 GRANT ALL ON TABLE public.rental_contracts_dates TO shan;
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 -- CREATE INDEX for fkeys 
-CREATE INDEX idx_r_contracts_paym_status__r_contracts_id_fkey ON rental_contracts_dates (rental_contracts_id_fkey);
-CREATE INDEX idx_r_contracts_paym_status__paym_status_id_fkey ON rental_contracts_dates (rental_contracts_payments_status_id_fkey);
+CREATE INDEX idx_r_contracts_paym_status__r_contracts_id_fkey ON rental_contracts_dates (r_contracts_id_fkey);
+CREATE INDEX idx_r_contracts_paym_status__paym_status_id_fkey ON rental_contracts_dates (r_contracts_payments_status_id_fkey);
 
 
 -- ***************************
@@ -551,10 +565,10 @@ CREATE INDEX idx_r_contracts_paym_status__paym_status_id_fkey ON rental_contract
 -- Table: public.rental_contracts_dates_log
 CREATE TABLE public.rental_contracts_dates_log
 (
-    r_contracts_d_log_id BIGSERIAL PRIMARY KEY,
+    rental_contracts_dates_log_id BIGSERIAL PRIMARY KEY,
     r_contracts_id_fkey bigint NOT NULL,
-    r_contracts_d_id_fkey bigint NOT NULL,
-    r_contracts_d_log_timestamp timestamp with time zone NOT NULL,
+    r_contracts_dates_id_fkey bigint NOT NULL,
+    r_contracts_dates_log_timestamp timestamp with time zone NOT NULL,
     r_contracts_pay_status_id_fkey_original smallint,
     r_contracts_pay_status_id_fkey_changedto smallint,
     r_contracts_d_log_updatequery text COLLATE pg_catalog."default",
@@ -562,20 +576,20 @@ CREATE TABLE public.rental_contracts_dates_log
         REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-     CONSTRAINT r_contracts_d_log__r_contracts_d_id_fkey FOREIGN KEY (r_contracts_d_id_fkey)
+     CONSTRAINT r_contracts_d_log__r_contracts_d_id_fkey FOREIGN KEY (r_contracts_dates_id_fkey)
         REFERENCES public.rental_contracts_dates (rental_contracts_dates_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
 WITH (OIDS = FALSE) TABLESPACE pg_default;
 ALTER TABLE public.rental_contracts_dates OWNER to postgres;
-GRANT ALL ON TABLE public.rental_contracts_dates TO aaron;
-GRANT ALL ON TABLE public.rental_contracts_dates TO postgres;
-GRANT ALL ON TABLE public.rental_contracts_dates TO shan;
+GRANT ALL ON TABLE public.rental_contracts_dates_log TO aaron;
+GRANT ALL ON TABLE public.rental_contracts_dates_log TO postgres;
+GRANT ALL ON TABLE public.rental_contracts_dates_log TO shan;
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 -- CREATE INDEX for fkeys 
 CREATE INDEX idx_r_contracts_d_log__r_contracts_id_fkey ON rental_contracts_dates_log (r_contracts_id_fkey);
-CREATE INDEX idx_r_contracts_d_log__r_contracts_d_id_fkey ON rental_contracts_dates_log (r_contracts_d_id_fkey);
+CREATE INDEX idx_r_contracts_d_log__r_contracts_d_id_fkey ON rental_contracts_dates_log (r_contracts_dates_id_fkey);
 -- date changes and price changes will be stored in the r_contracts_dates_log table. acheive this with less columns by using the changedTo and setting a really high number for different statuses like 233, 377, etc
 
 
@@ -586,10 +600,10 @@ CREATE INDEX idx_r_contracts_d_log__r_contracts_d_id_fkey ON rental_contracts_da
 CREATE TABLE public.rental_contracts_partial_refunds
 (
     rental_contracts_partial_refunds_id BIGSERIAL PRIMARY KEY,
-    rental_contracts_id_fkey bigint NOT NULL,
-    rental_contracts_partial_refunds_amount money NOT NULL,
+    r_contracts_id_fkey bigint NOT NULL,
+    r_contracts_partial_refunds_amount money NOT NULL,
     locations_countries_id_fkey smallint NOT NULL,
-    CONSTRAINT r_contracts_part_refunds__r_contracts_id_fkey FOREIGN KEY (rental_contracts_id_fkey)
+    CONSTRAINT r_contracts_part_refunds__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
         REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -601,7 +615,7 @@ GRANT ALL ON TABLE public.rental_contracts_partial_refunds TO postgres;
 GRANT ALL ON TABLE public.rental_contracts_partial_refunds TO shan;
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 -- CREATE INDEX for fkeys 
-CREATE INDEX idx_r_contracts_part_refunds__r_contract_id_fkey ON rental_contracts_partial_refunds (rental_contracts_id_fkey);
+CREATE INDEX idx_r_contracts_part_refunds__r_contract_id_fkey ON rental_contracts_partial_refunds (r_contracts_id_fkey);
 
 
 -- ***************************
@@ -611,11 +625,11 @@ CREATE INDEX idx_r_contracts_part_refunds__r_contract_id_fkey ON rental_contract
 CREATE TABLE public.rental_contracts_coupon_codes -- // code works on frontend only and update per the rental_contracts_dates_total_price_of_dates 
 (
     rental_contracts_coupon_codes_id BIGSERIAL PRIMARY KEY,
-    rental_contracts_coupon_codes_validUntil date NOT NULL,
-    rental_contracts_coupon_codes_code text NOT NULL,
-    rental_contracts_coupon_codes_three_letter_currency_code text,
-    rental_contracts_coupon_codes_amount integer NOT NULL,
-    rental_contracts_coupon_codes_isPercent boolean NOT NULL
+    r_contracts_coupon_codes_validUntil date NOT NULL,
+    r_contracts_coupon_codes_code text NOT NULL,
+    r_contracts_coupon_codes_three_letter_currency_code text,
+    r_contracts_coupon_codes_amount integer NOT NULL,
+    r_contracts_coupon_codes_isPercent boolean NOT NULL
 )
 WITH (OIDS = FALSE) TABLESPACE pg_default;
 ALTER TABLE public.rental_contracts_coupon_codes OWNER to postgres;
@@ -626,43 +640,48 @@ GRANT ALL ON TABLE public.rental_contracts_coupon_codes TO shan;
 
 
 -- Now grant access to all the sequences --- nevermind, dont need it -- nevermind, maybe do need it
--- GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.locations_countries_countries_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.locations_countries_countries_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO shan;
--- GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO shan;
--- GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO shan;
--- GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO shan;
--- GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO aaron;
--- GRANT ALL ON SEQUENCE public.users_users_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.locations_countries_locations_countries_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.locations_countries_locations_countries_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO aaron;
+GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO shan;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_log_rental_contracts_dates_log_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_log_rental_contracts_dates_log_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO aaron;
+GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO shan;
+GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO aaron;
+GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO shan;
+GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.users_users_id_seq TO aaron;
+GRANT ALL ON SEQUENCE public.users_users_id_seq TO shan;
+
+
 
 
 
@@ -719,8 +738,8 @@ INSERT INTO public.locations_cities(locations_cities_airportcode,locations_citie
 -- 	VALUES (1, 1, 'SRID=4326;POINT(108.24287058201048 16.074765847235792)');
 
 INSERT INTO public.rental_contracts_payments_status(
-                rental_contracts_payments_status_isPaid,
-                rental_contracts_payments_status_description)
+                r_contracts_payments_status_isPaid,
+                r_contracts_payments_status_description)
     VALUES (True,'Paid but not verified. Pending.'),
     (True,'Paid and verified. Done.'),
     (True,'Paid and reserving bike. Official on hold.'),
@@ -734,7 +753,7 @@ INSERT INTO public.rental_contracts_payments_status(
     (False, 'Not paid and cancelled. User not approved.'),
     (False, 'Not paid and cancelled. Expired.'), -- run batch job to expire contracts.
     (False, 'Not paid and cancelled. User not approved.')
-;  
+;
 
     
 
