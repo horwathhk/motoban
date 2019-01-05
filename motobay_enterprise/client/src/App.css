@@ -1,0 +1,27 @@
+img {
+  width: 100%;
+  margin-top: -50px;
+}
+
+.landing {
+  position: relative;
+  background: url("./image/scooter.jpg") no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 130vh;
+  margin-top: -24px;
+  margin-bottom: -50px;
+}
+
+.landing-inner {
+  padding-top: 80px;
+}
+
+.dark-overlay {
+  background-color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
