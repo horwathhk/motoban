@@ -775,7 +775,7 @@ INSERT INTO public.rental_contracts_payments_status(
                 r_contracts_payments_status_isPaid,
                 r_contracts_payments_status_description)
     VALUES (True,'Paid but not verified. Pending.'),
-    (True,'Paid and verified. Done.'),
+    (True,'Paid and verified for bike rental.'),
     (True,'Paid and reserving bike. Official on hold.'),
     (True,'Paid and requesting extension.'),
     (True,'Paid and cancelled. Should refund all.'),
@@ -783,10 +783,7 @@ INSERT INTO public.rental_contracts_payments_status(
     (True,'Paid and cancelled. Owner not approved'),
     (False,'Not paid. Reserving bike. Unofficial on hold.'),
     (False,'Not paid. Extension request.'),
-    (False,'Not paid and cancelled. Owner not approved.'),
-    (False,'Not paid and cancelled. User not approved.'),
     (False,'Not paid and cancelled. Expired.'), -- run batch job to expire contracts.
-    (False,'Not paid and cancelled. User not approved.')
 ;
 
     
