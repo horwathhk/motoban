@@ -639,7 +639,7 @@ def createNewUsers(howMany):
     print('finished creating ' + str(howMany) + ' users')
 
 def createNewRenters(howMany):
-    print('creating ' + str(howMany) + ' users...')
+    print('creating ' + str(howMany) + ' renters...')
     for i in range(0,howMany):
         # **********************
         # Generate random info
