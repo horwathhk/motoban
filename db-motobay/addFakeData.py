@@ -533,8 +533,8 @@ def select_random_user(sql_vals):
 
 def insert_rental_contract(sql_vals):
     # print(sql_vals)
-    sql_query = """INSERT INTO rental_contracts(renters_id_fkey, users_id_fkey, stores_id_fkey, bikes_rentals_id_fkey)
-             VALUES (%s, %s, %s, %s) RETURNING rental_contracts_id;
+    sql_query = """INSERT INTO rental_contracts(renters_id_fkey, users_id_fkey, stores_id_fkey, bikes_rentals_id_fkey, r_contracts_userHasBike)
+             VALUES (%s, %s, %s, %s, %s) RETURNING rental_contracts_id;
              """
     conn = None
     rental_contracts_id = None
@@ -564,8 +564,8 @@ def insert_rental_contract(sql_vals):
 
 def insert_rental_contracts_dates(sql_vals):
     # print(sql_vals)
-    sql_query = """INSERT INTO rental_contracts_dates(r_contracts_id_fkey, r_contracts_dates_timestamp, r_contracts_dates_startdate, r_contracts_dates_enddate, r_contracts_dates_price_per_day, r_contracts_dates_total_price_of_dates, locations_countries_id_fkey, r_contracts_dates_num_of_days, r_contracts_payments_status_id_fkey, r_contracts_dates_isUserApproved,r_contracts_dates_isOwnerApproved, r_contracts_dates_userHasBike, r_contracts_dates_isPaidFinalCheck)
-             VALUES (%s, current_timestamp, %s, %s, %s, %s, %s, %s, %s, True, %s, %s, False) RETURNING rental_contracts_dates_id;
+    sql_query = """INSERT INTO rental_contracts_dates(r_contracts_id_fkey, r_contracts_dates_timestamp, r_contracts_dates_startdate, r_contracts_dates_enddate, r_contracts_dates_price_per_day, r_contracts_dates_total_price_of_dates, locations_countries_id_fkey, r_contracts_dates_num_of_days, r_contracts_payments_status_id_fkey, r_contracts_dates_isUserApproved,r_contracts_dates_isOwnerApproved, r_contracts_dates_isPaidFinalCheck)
+             VALUES (%s, current_timestamp, %s, %s, %s, %s, %s, %s, %s, True, %s, False) RETURNING rental_contracts_dates_id;
              """
     conn = None
     rental_contracts_dates_id = None
@@ -708,19 +708,20 @@ def createNewRenters(howMany):
         
         # create a rental contract
         rando_rentee = select_random_user([new_user_id]) # anyone except this renter-user
-        new_rental_contract_id = insert_rental_contract([new_renter_id, rando_rentee, new_store_id, new_rental_bike3_id])
-        # create a row in rental_contracts_dates
-        isOwnerApproved = random.choice([True,False])
-        rand_daysOfContract = random.randint(10,30)
-        enddate = '01-' + str(1+rand_daysOfContract) + '-2019'
         isOwnerApproved = random.choice([True, False])
-        
         payments_status_id_fkey = random.choice([1,2,5,12]) if isOwnerApproved else random.choice([3,5,6,7,8,10,12])
         userHasBikeBool = True if payments_status_id_fkey == 2 or payments_status_id_fkey == 9 else False
-        new_rental_contract_dates_id = insert_rental_contracts_dates([new_rental_contract_id, '01-09-2019', enddate, rBikePriceD3, (rBikePriceD3 * rand_daysOfContract), rand_country_id, rand_daysOfContract, payments_status_id_fkey, userHasBikeBool, isOwnerApproved])
+        new_rental_contract_id = insert_rental_contract([new_renter_id, rando_rentee, new_store_id, new_rental_bike3_id, userHasBikeBool])
+        # create a row in rental_contracts_dates
+        rand_daysOfContract = random.randint(10,30)
+        enddate = '01-' + str(1+rand_daysOfContract) + '-2019'
+        
+        
+        
+        new_rental_contract_dates_id = insert_rental_contracts_dates([new_rental_contract_id, '01-09-2019', enddate, rBikePriceD3, (rBikePriceD3 * rand_daysOfContract), rand_country_id, rand_daysOfContract, payments_status_id_fkey,isOwnerApproved])
         new_rental_contracts_dates_log_id = insert_rental_contracts_dates_log([new_rental_contract_id, new_rental_contract_dates_id, payments_status_id_fkey, payments_status_id_fkey])
 
     print('finished creating ' + str(howMany) + ' renters')
 
-createNewUsers(2)
-createNewRenters(3)
+createNewUsers(3)
+createNewRenters(100)

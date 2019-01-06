@@ -46,9 +46,9 @@ COMMENT ON COLUMN users.users_email IS 'Emails will be validated on the frontend
 --DROP TABLE public.users_details;
 CREATE TABLE public.users_details
 (-- column tetris complete
+    users_details_id BIGSERIAL PRIMARY KEY,
     users_id_fkey bigint NOT NULL,
     users_details_signup_timestamp timestamp with time zone NOT NULL,
-    CONSTRAINT users_details_pkey PRIMARY KEY (users_id_fkey),
     CONSTRAINT users_details__users_id_fkey FOREIGN KEY (users_id_fkey)
         REFERENCES public.users (users_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -473,6 +473,7 @@ CREATE TABLE public.rental_contracts
     users_id_fkey bigint NOT NULL,
     renters_id_fkey integer NOT NULL,
     stores_id_fkey integer NOT NULL,
+    r_contracts_userHasBike boolean NOT NULL,
     CONSTRAINT rental_contracts__bikes_rentals_id_fkey FOREIGN KEY (bikes_rentals_id_fkey)
         REFERENCES public.bikes_rentals (bikes_rentals_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -539,7 +540,6 @@ CREATE TABLE public.rental_contracts_dates
     r_contracts_dates_isOwnerApproved boolean,
     r_contracts_dates_isUserApproved boolean,
     r_contracts_dates_isPaidFinalCheck boolean NOT NULL, -- run batch processes after the transaction to verify
-    r_contracts_dates_userHasBike boolean NOT NULL,
     CONSTRAINT r_contracts_dates__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
         REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -592,6 +592,35 @@ GRANT ALL ON TABLE public.rental_contracts_dates_log TO shan;
 CREATE INDEX idx_r_contracts_d_log__r_contracts_id_fkey ON rental_contracts_dates_log (r_contracts_id_fkey);
 CREATE INDEX idx_r_contracts_d_log__r_contracts_d_id_fkey ON rental_contracts_dates_log (r_contracts_dates_id_fkey);
 -- date changes and price changes will be stored in the r_contracts_dates_log table. acheive this with less columns by using the changedTo and setting a really high number for different statuses like 233, 377, etc
+
+
+-- ***************************
+-- ***************************
+-- Table: public.rental_contracts_partial_refunds
+-- DROP TABLE public.rental_contracts_partial_refunds;
+CREATE TABLE public.rental_contracts_reviews
+(
+    rental_contracts_reviews_id BIGSERIAL PRIMARY KEY,
+    r_contracts_reviews_title text NOT NULL,
+    r_contracts_reviews_body text NOT NULL,
+    r_contracts_id_fkey bigint NOT NULL,
+    r_contracts_reviews_timestamp timestamp with time zone NOT NULL,
+    r_contracts_reviews_stars smallint NOT NULL,
+    CONSTRAINT r_contracts_reviews__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
+        REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT r_contracts_reviews_stars_lessthansix CHECK (r_contracts_reviews_stars <= 5)
+)
+WITH (OIDS = FALSE) TABLESPACE pg_default;
+ALTER TABLE public.rental_contracts_reviews OWNER to postgres;
+GRANT ALL ON TABLE public.rental_contracts_reviews TO aaron;
+GRANT ALL ON TABLE public.rental_contracts_reviews TO postgres;
+GRANT ALL ON TABLE public.rental_contracts_reviews TO shan;
+-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+-- CREATE INDEX for fkeys 
+CREATE INDEX idx_r_contracts_reviews__r_contract_id_fkey ON rental_contracts_reviews (r_contracts_id_fkey);
+
 
 
 -- ***************************
@@ -681,6 +710,10 @@ GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO aaron;
 GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO shan;
 GRANT ALL ON SEQUENCE public.users_users_id_seq TO aaron;
 GRANT ALL ON SEQUENCE public.users_users_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.users_details_users_details_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.users_details_users_details_id_seq TO shan WITH GRANT OPTION;
+
+
 
 
 
