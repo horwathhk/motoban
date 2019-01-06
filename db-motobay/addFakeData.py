@@ -440,8 +440,8 @@ def insert_store(sql_vals):
 
 def insert_store_details(sql_vals):
     # """ insert a new user into the users table """
-    sql_query = """INSERT INTO stores_details(stores_id_fkey, store_name, locations_countries_id_fkey, stores_details_email, store_address, store_phone)
-             VALUES (%s,%s, %s, %s, %s, %s) RETURNING stores_details_id;
+    sql_query = """INSERT INTO stores_details(stores_id_fkey, store_name, locations_countries_id_fkey,locations_cities_id_fkey, stores_details_email, store_address, store_phone)
+             VALUES (%s,%s, %s, %s, %s, %s, %s) RETURNING stores_details_id;
              """
     conn = None
     stores_details_id = None
@@ -564,7 +564,7 @@ def insert_rental_contract(sql_vals):
 
 def insert_rental_contracts_dates(sql_vals):
     # print(sql_vals)
-    sql_query = """INSERT INTO rental_contracts_dates(rental_contracts_id_fkey, rental_contracts_dates_timestamp, rental_contracts_dates_startdate, rental_contracts_dates_enddate, rental_contracts_dates_price_per_day, rental_contracts_dates_total_price_of_dates, locations_countries_id_fkey, rental_contracts_dates_num_of_days, rental_contracts_payments_status_id_fkey, rental_contracts_dates_isUserApproved,rental_contracts_dates_isOwnerApproved, rental_contracts_dates_isPaidFinalCheck)
+    sql_query = """INSERT INTO rental_contracts_dates(r_contracts_id_fkey, r_contracts_dates_timestamp, r_contracts_dates_startdate, r_contracts_dates_enddate, r_contracts_dates_price_per_day, r_contracts_dates_total_price_of_dates, locations_countries_id_fkey, r_contracts_dates_num_of_days, r_contracts_payments_status_id_fkey, r_contracts_dates_isUserApproved,r_contracts_dates_isOwnerApproved, r_contracts_dates_isPaidFinalCheck)
              VALUES (%s, current_timestamp, %s, %s, %s, %s, %s, %s, %s, True, %s, False) RETURNING rental_contracts_dates_id;
              """
     conn = None
@@ -593,8 +593,8 @@ def insert_rental_contracts_dates(sql_vals):
     return rental_contracts_dates_id
 
 def insert_rental_contracts_dates_log(sql_vals):
-    sql_query = """INSERT INTO rental_contracts_dates_log(r_contracts_id_fkey, r_contracts_d_id_fkey, r_contracts_d_log_timestamp, r_contracts_pay_status_id_fkey_original, r_contracts_d_log_updatequery)
-	VALUES (%s, %s, current_timestamp, %s, 'put text describing what changes are happening to the contract on the update query') RETURNING r_contracts_d_log_id;
+    sql_query = """INSERT INTO rental_contracts_dates_log(r_contracts_id_fkey, r_contracts_dates_id_fkey, r_contracts_dates_log_timestamp, r_contracts_pay_status_id_fkey_original, r_contracts_pay_status_id_fkey_changedto, r_contracts_d_log_updatequery)
+	VALUES (%s, %s, current_timestamp, %s, %s, 'put text describing what changes are happening to the contract on the update query, or simply pass the update query as a string and store it here.') RETURNING rental_contracts_dates_log_id;
              """
     conn = None
     rental_contracts_dates_log_id = None
@@ -693,7 +693,7 @@ def createNewRenters(howMany):
         # create new store
         new_store_id = insert_store([new_renter_id, rand_city_id, rand_coordinates_inVnTh])
         rando_store_name = getRandoStoreName()
-        new_store_details_id = insert_store_details([new_store_id, rando_store_name, rand_country_id, getRandoStoreEmail(rando_store_name), getRandoStoreAddress(), getStorePhoneString()])
+        new_store_details_id = insert_store_details([new_store_id, rando_store_name, rand_country_id, rand_city_id, getRandoStoreEmail(rando_store_name), getRandoStoreAddress(), getStorePhoneString()])
         new_renters_premium_log_id = insert_renters_premium_log([new_renter_id, random.choice([True, False])])
         
         # create rental bikes from the first 4 of 5 bikes related to this user-renter
@@ -714,9 +714,10 @@ def createNewRenters(howMany):
         rand_daysOfContract = random.randint(10,30)
         enddate = '01-' + str(1+rand_daysOfContract) + '-2019'
         isOwnerApproved = random.choice([True, False])
+        
         payments_status_id_fkey = random.choice([1,2,5,12]) if isOwnerApproved else random.choice([3,5,6,7,8,10,12])
         new_rental_contract_dates_id = insert_rental_contracts_dates([new_rental_contract_id, '01-09-2019', enddate, rBikePriceD3, (rBikePriceD3 * rand_daysOfContract), rand_country_id, rand_daysOfContract, payments_status_id_fkey, isOwnerApproved])
-        new_rental_contracts_dates_log_id = insert_rental_contracts_dates_log([new_rental_contract_id, new_rental_contract_dates_id, payments_status_id_fkey])
+        new_rental_contracts_dates_log_id = insert_rental_contracts_dates_log([new_rental_contract_id, new_rental_contract_dates_id, payments_status_id_fkey, payments_status_id_fkey])
 
     print('finished creating ' + str(howMany) + ' renters')
 
