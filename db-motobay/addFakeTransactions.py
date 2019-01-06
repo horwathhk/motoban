@@ -3,10 +3,20 @@ from config import config
 import random
 
 
-def getStartDateForExtension(oldEndDate):
+def getDateForExtension(oldEndDate, numDaysExt=1):
+    oldEndDate = str(oldEndDate)
     lenOfStr = len(oldEndDate)
-    dayNum = oldEndDate[-2:]
-    
+    dayNum = int(oldEndDate[-2:])
+    dayMonth = int(oldEndDate[5:7])
+    dayExt = numDaysExt + dayNum
+    if (dayExt>31):
+        dayMonth = '0' + str((dayMonth + 1))
+        dayExt = str(dayExt - 31)
+        if(dayExt<10):
+            dayExt = '0' + dayExt
+    newDate = str(oldEndDate[:5]) + str(dayMonth) + '-' + str(dayExt)
+    print('new date: ' + newDate)
+    return newDate
 
 def select_random_r_contract_PaidAndDone():
     # """ insert a new user into the users table """
@@ -33,7 +43,11 @@ def select_random_r_contract_PaidAndDone():
         cur.execute(sql_query)
         
         # get the rows back
-        random_contracts_paid = cur.fetchone()
+        
+        random_contracts_paid = [dict((cur.description[i][0], value) \
+               for i, value in enumerate(row)) for row in cur.fetchall()]
+        print(random_contracts_paid)
+        # random_contracts_paid = cur.fetchone()
         # print(random_contract)
 
         # close communication with the database
@@ -65,7 +79,11 @@ def insert_rental_contracts_dates_extension(sql_vals):
         # execute the INSERT statement
         cur.execute(sql_query, sql_vals)
         # get the generated id back
-        rental_contracts_dates_id = cur.fetchone()[0]
+        
+        # rental_contracts_dates_id = cur.fetchone()[0]
+        r = [dict((cur.description[i][0], value) \
+               for i, value in enumerate(row)) for row in cur.fetchall()]
+        
         # commit the changes to the database
         conn.commit()
         # close communication with the database
@@ -94,9 +112,11 @@ def createNewExtenstions(howMany):
             # rc_id, br_id_fkey, users_id_fkey, r_id_fkey, 
             # s_id_fkey, rc_userHasBike, rc_pay_status_id, 
             # rc_pay_status_isPaid, rc_pay_status_descript
-        rc_id = rando_r_contract_paid[15]
+        rc_id = rando_r_contract_paid[0]['rental_contracts_id']
+        # print(rando_r_contract_paid)
+        extStartDate = getDateForExtension(rando_r_contract_paid[0]['r_contracts_dates_startdate'], 1)
+        extEndDate = getDateForExtension(rando_r_contract_paid[0]['r_contracts_dates_startdate'], random.randint(1,15))
         
-        rc_d_startd = rando_r_contract_paid[4]
-        print(rando_r_contract_paid)
-        r_contracts_dates_log_id = insert_rental_contracts_dates_extension([rc_id, rc_startd])
+        # r_contracts_dates_log_id = insert_rental_contracts_dates_extension([rc_id, extStartDate, extEndDate])
+
 createNewExtenstions(1)
