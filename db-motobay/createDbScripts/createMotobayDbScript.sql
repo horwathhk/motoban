@@ -539,6 +539,7 @@ CREATE TABLE public.rental_contracts_dates
     r_contracts_dates_isOwnerApproved boolean,
     r_contracts_dates_isUserApproved boolean,
     r_contracts_dates_isPaidFinalCheck boolean NOT NULL, -- run batch processes after the transaction to verify
+    r_contracts_dates_userHasBike boolean NOT NULL,
     CONSTRAINT r_contracts_dates__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
         REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
