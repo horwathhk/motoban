@@ -21,10 +21,9 @@ import RegisterBikeView from "./components/views/RegisterBikeView";
 import RenterRegistrationView from "./components/views/RenterRegistrationView";
 import SigninView from "../src/components/views/BikeProfileView";
 import SignUpView from "../src/components/views/SignUpView";
-import StoreBikesViews from "./components/views/StoreBikesView";
 import StoreRegistrationView from "./components/views/StoreRegistrationView";
 import StoresView from "./components/views/StoresView";
-
+import StoreView from "./components/views/StoreView";
 //components
 import SigninModule from "./components/end-user-facing/auth/SignInModal";
 import RenterRegistrationForm from "./components/end-user-facing/renter/RenterRegistrationForm";
@@ -68,10 +67,10 @@ class App extends Component {
             <Route exact path="/signin" component={SigninView} />
             <Route exact path="/my-profile-view" component={MyProfileView} />
             <Route exact path="/stores" component={StoresView} />
+            <Route exact path="/store-view" component={StoreView} />
             <Route exact path="/register-bike" component={RegisterBikeView} />
 
             <Route exact path="/bike-profile" component={BikeProfileView} />
-            <Route exact path="/store-bikes" component={StoreBikesViews} />
             <Route
               exact
               path="/store-registration"

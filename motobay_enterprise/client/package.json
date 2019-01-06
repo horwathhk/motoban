@@ -11,6 +11,7 @@
     "bootstrap-toggle": "^2.2.2",
     "classnames": "^2.2.6",
     "flexbox-react": "^4.4.0",
+    "font-awesome": "^4.7.0",
     "google-map-react": "^1.1.1",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",

@@ -30,7 +30,7 @@ class StoresView extends Component {
     if ({ store_idInHome } !== null) {
       console.log(store_idInHome);
       this.props.history.push({
-        pathname: "/store-bikes",
+        pathname: "/store-view",
         state: { store_id: this.state.store_idInHome }
       });
     }
