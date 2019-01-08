@@ -594,32 +594,117 @@ CREATE INDEX idx_r_contracts_d_log__r_contracts_d_id_fkey ON rental_contracts_da
 -- date changes and price changes will be stored in the r_contracts_dates_log table. acheive this with less columns by using the changedTo and setting a really high number for different statuses like 233, 377, etc
 
 
--- ***************************
--- ***************************
--- Table: public.rental_contracts_partial_refunds
--- DROP TABLE public.rental_contracts_partial_refunds;
-CREATE TABLE public.rental_contracts_reviews
-(
-    rental_contracts_reviews_id BIGSERIAL PRIMARY KEY,
-    r_contracts_reviews_title text NOT NULL,
-    r_contracts_reviews_body text NOT NULL,
+-- table: rentals_reviews_stars
+--
+CREATE TABLE public.bikes_rentals_stars
+(-- column tetris complete 
+    bikes_rentals_stars_id BIGSERIAL PRIMARY KEY,
     r_contracts_id_fkey bigint NOT NULL,
-    r_contracts_reviews_timestamp timestamp with time zone NOT NULL,
-    r_contracts_reviews_stars smallint NOT NULL,
-    CONSTRAINT r_contracts_reviews__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
+    bikes_rentals_id_fkey bigint NOT NULL,
+    bikes_rentals_stars  smallint NOT NULL,
+    CONSTRAINT rental_reviews_stars__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
         REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT r_contracts_reviews_stars_lessthansix CHECK (r_contracts_reviews_stars <= 5)
+    CONSTRAINT rental_reviews_stars__bikes_rentals_id_fkey FOREIGN KEY (bikes_rentals_id_fkey)
+        REFERENCES public.bikes_rentals (bikes_rentals_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 )
 WITH (OIDS = FALSE) TABLESPACE pg_default;
-ALTER TABLE public.rental_contracts_reviews OWNER to postgres;
-GRANT ALL ON TABLE public.rental_contracts_reviews TO aaron;
-GRANT ALL ON TABLE public.rental_contracts_reviews TO postgres;
-GRANT ALL ON TABLE public.rental_contracts_reviews TO shan;
+ALTER TABLE public.bikes_rentals_stars OWNER to postgres;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO shan;
 -- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 -- CREATE INDEX for fkeys 
-CREATE INDEX idx_r_contracts_reviews__r_contract_id_fkey ON rental_contracts_reviews (r_contracts_id_fkey);
+CREATE INDEX idx_bikes_rentals_stars__r_contract_id_fkey ON bikes_rentals_stars (r_contracts_id_fkey);
+CREATE INDEX idx_bikes_rentals_stars__bikes_rentals_id_fkey ON bikes_rentals_stars (bikes_rentals_id_fkey);
+
+-- Table: Bikes Rentals Reviews
+CREATE TABLE public.bikes_rentals_reviews
+(-- column tetris complete 
+    bikes_rentals_reviews_id BIGSERIAL PRIMARY KEY,
+    r_contracts_id_fkey bigint NOT NULL,
+    bikes_rentals_stars_id_fkey bigint NOT NULL,
+    bikes_rentals_reviews_timestamp timestamp with time zone NOT NULL,
+    r_contracts_reviews_title text,
+    r_contracts_reviews_body text, 
+    CONSTRAINT bikes_rentals_reviews__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
+        REFERENCES public.rental_contracts(rental_contracts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT bikes_rentals_reviews__bikes_rentals_stars_id_fkey FOREIGN KEY (bikes_rentals_stars_id_fkey)
+        REFERENCES public.bikes_rentals_stars(bikes_rentals_stars_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (OIDS = FALSE) TABLESPACE pg_default;
+ALTER TABLE public.bikes_rentals_reviews OWNER to postgres;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO shan;
+-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+-- CREATE INDEX for fkeys 
+CREATE INDEX idx_bikes_rentals_reviews__r_contract_id_fkey ON bikes_rentals_reviews (r_contracts_id_fkey);
+CREATE INDEX idx_bikes_rentals_reviews__bikes_rentals_stars_id_fkey ON bikes_rentals_reviews (bikes_rentals_stars_id_fkey);
+
+
+
+
+-- stores_stars
+CREATE TABLE public.stores_stars
+(-- column tetris complete 
+    stores_stars_id BIGSERIAL PRIMARY KEY,
+    stores_id_fkey bigint NOT NULL,
+    rental_contracts_id_fkey  bigint NOT NULL,
+    CONSTRAINT stores_stars__rental_contracts_id_fkey FOREIGN KEY (rental_contracts_id_fkey)
+        REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT stores_stars__stores_id_fkey FOREIGN KEY (stores_id_fkey)
+        REFERENCES public.stores (stores_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (OIDS = FALSE) TABLESPACE pg_default;
+ALTER TABLE public.stores_stars OWNER to postgres;
+GRANT ALL ON TABLE public.stores_stars TO aaron;
+GRANT ALL ON TABLE public.stores_stars TO postgres;
+GRANT ALL ON TABLE public.stores_stars TO shan;
+-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+-- CREATE INDEX for fkeys 
+CREATE INDEX idx_stores_stars__stores_id_fkey ON stores_stars (stores_id_fkey);
+CREATE INDEX idx_stores_stars__rental_contracts_id_fkey ON stores_stars (rental_contracts_id_fkey);
+
+
+-- Table: Stores Rentals Reviews
+CREATE TABLE public.stores_reviews
+(-- column tetris complete 
+    stores_reviews_id BIGSERIAL PRIMARY KEY,
+    stores_id_fkey bigint NOT NULL,
+    rental_contracts_id_fkey bigint NOT NULL,
+    stores_reviews_timestamp timestamp with time zone NOT NULL,
+    stores_reviews_title text,
+    stores_reviews_body text,
+    CONSTRAINT stores_reviews__stores_id_fkey FOREIGN KEY (stores_id_fkey)
+        REFERENCES public.stores(stores_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT stores_reviews__rental_contracts_id_fkey FOREIGN KEY (rental_contracts_id_fkey)
+        REFERENCES public.rental_contracts(rental_contracts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (OIDS = FALSE) TABLESPACE pg_default;
+ALTER TABLE public.bikes_rentals_reviews OWNER to postgres;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO shan;
+-- &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+-- CREATE INDEX for fkeys 
+CREATE INDEX idx_stores_reviews__stores_id_fkey ON stores_reviews (stores_id_fkey);
+CREATE INDEX idx_stores_reviews_stars__rental_contracts_id_fkey ON stores_reviews (rental_contracts_id_fkey);
 
 
 
@@ -670,48 +755,58 @@ GRANT ALL ON TABLE public.rental_contracts_coupon_codes TO shan;
 
 
 -- Now grant access to all the sequences --- nevermind, dont need it -- nevermind, maybe do need it
-GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.locations_countries_locations_countries_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.locations_countries_locations_countries_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO aaron;
-GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO shan;
-GRANT ALL ON SEQUENCE public.rental_contracts_dates_log_rental_contracts_dates_log_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.rental_contracts_dates_log_rental_contracts_dates_log_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO aaron;
-GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO shan;
-GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO aaron;
-GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO shan;
-GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO shan;
-GRANT ALL ON SEQUENCE public.users_users_id_seq TO aaron;
-GRANT ALL ON SEQUENCE public.users_users_id_seq TO shan;
+GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_bikes_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_conditions_bikes_conditions_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_makers_bikes_makers_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_models_bikes_models_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_rentals_bikes_rentals_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_rentals_reviews_bikes_rentals_reviews_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_rentals_reviews_bikes_rentals_reviews_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_rentals_stars_bikes_rentals_stars_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.bikes_rentals_stars_bikes_rentals_stars_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.locations_cities_locations_cities_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.locations_countries_locations_countries_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.locations_countries_locations_countries_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_coupon_codes_rental_contracts_coupon_codes_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_log_rental_contracts_dates_log_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_log_rental_contracts_dates_log_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_dates_rental_contracts_dates_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_partial_refu_rental_contracts_partial_refu_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_payments_sta_rental_contracts_payments_sta_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.rental_contracts_rental_contracts_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.renters_details_renters_details_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.renters_premium_log_renters_premium_log_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.renters_renters_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_details_stores_details_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_reviews_stores_reviews_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_reviews_stores_reviews_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_signin_stores_signin_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_stars_stores_stars_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_stars_stores_stars_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.stores_stores_id_seq TO shan WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.users_details_users_details_id_seq TO aaron WITH GRANT OPTION;
 GRANT ALL ON SEQUENCE public.users_details_users_details_id_seq TO shan WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.users_users_id_seq TO aaron WITH GRANT OPTION;
+GRANT ALL ON SEQUENCE public.users_users_id_seq TO shan WITH GRANT OPTION;
+
+
 
 
 
@@ -783,104 +878,11 @@ INSERT INTO public.rental_contracts_payments_status(
     (True,'Paid and cancelled. Owner not approved'),
     (False,'Not paid. Reserving bike. Unofficial on hold.'),
     (False,'Not paid. Extension request.'),
-    (False,'Not paid and cancelled. Expired.'), -- run batch job to expire contracts.
+    (False,'Not paid and cancelled. Expired.') -- run batch job to expire contracts.
 ;
 
 
 
--- Table: Bikes Rentals Reviews
-CREATE TABLE public.bikes_rentals_reviews
-(-- column tetris complete 
-    rental_reviews_id BIGSERIAL PRIMARY KEY,
-    r_contracts_reviews_title text,
-    r_contracts_reviews_body text, 
-    r_contracts_id_fkey bigint NOT NULL,
-  
-    CONSTRAINT bikes_rentals_reviews__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
-        REFERENCES public.rental_contracts(rental_contracts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-   
-)
-WITH (OIDS = FALSE)
-TABLESPACE pg_default;
-ALTER TABLE public.bikes_rentals_reviews OWNER to postgres;
-
-GRANT ALL ON TABLE public.bikes_rentals_reviews TO aaron;
-GRANT ALL ON TABLE public.bikes_rentals_reviews TO postgres;
-GRANT ALL ON TABLE public.bikes_rentals_reviews TO shan;
 
 
--- table: rentals_reviews_stars
---
-CREATE TABLE public.bikes_rentals_stars
-(-- column tetris complete 
-    rentals_reviews_stars_id BIGSERIAL PRIMARY KEY,
-    r_contracts_id_fkey bigint NOT NULL,
-    bikes_rentals_stars  smallint NOT NULL,
-    CONSTRAINT rental_reviews_stars__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
-        REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (OIDS = FALSE)
-TABLESPACE pg_default;
-ALTER TABLE public.bikes_rentals_stars OWNER to postgres;
 
-GRANT ALL ON TABLE public.bikes_rentals_stars TO aaron;
-GRANT ALL ON TABLE public.bikes_rentals_stars TO postgres;
-GRANT ALL ON TABLE public.bikes_rentals_stars TO shan;
-
--- Table: Stores Rentals Reviews
-CREATE TABLE public.stores_reviews
-(-- column tetris complete 
-    stores_reviews_id BIGSERIAL PRIMARY KEY,
-    stores_reviews_title text,
-    stores_reviews_body text,
-    stores_id_fkey bigint NOT NULL,
-    bikes_rentals_id_fkey bigint NOT NULL,
-
-    
-  
-    CONSTRAINT stores_reviews__stores_id_fkey FOREIGN KEY (stores_id_fkey)
-        REFERENCES public.stores(stores_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-    CONSTRAINT stores_reviews__bikes_rentals_id_fkey FOREIGN KEY (bikes_rentals_id_fkey)
-        REFERENCES public.bikes_rentals(bikes_rentals_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-   
-)
-WITH (OIDS = FALSE)
-TABLESPACE pg_default;
-ALTER TABLE public.bikes_rentals_reviews OWNER to postgres;
-
-GRANT ALL ON TABLE public.bikes_rentals_reviews TO aaron;
-GRANT ALL ON TABLE public.bikes_rentals_reviews TO postgres;
-GRANT ALL ON TABLE public.bikes_rentals_reviews TO shan;
-
-
--- stores_stars
-CREATE TABLE public.stores_stars
-(-- column tetris complete 
-    stores_stars_id BIGSERIAL PRIMARY KEY,
-    bikes_rentals_id_fkey bigint NOT NULL,
-    stores_id_fkey bigint NOT NULL,
-    bikes_rentals_stars  smallint NOT NULL,
-    CONSTRAINT stores_stars__bikes_rentals_id_fkey FOREIGN KEY (bikes_rentals_id_fkey)
-        REFERENCES public.bikes_rentals (bikes_rentals_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-    CONSTRAINT stores_stars__stores_id_fkey FOREIGN KEY (stores_id_fkey)
-        REFERENCES public.stores (stores_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (OIDS = FALSE)
-TABLESPACE pg_default;
-ALTER TABLE public.bikes_rentals_stars OWNER to postgres;
-
-GRANT ALL ON TABLE public.bikes_rentals_stars TO aaron;
-GRANT ALL ON TABLE public.bikes_rentals_stars TO postgres;
-GRANT ALL ON TABLE public.bikes_rentals_stars TO shan;
