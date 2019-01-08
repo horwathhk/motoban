@@ -786,6 +786,101 @@ INSERT INTO public.rental_contracts_payments_status(
     (False,'Not paid and cancelled. Expired.'), -- run batch job to expire contracts.
 ;
 
-    
+
+
+-- Table: Bikes Rentals Reviews
+CREATE TABLE public.bikes_rentals_reviews
+(-- column tetris complete 
+    rental_reviews_id BIGSERIAL PRIMARY KEY,
+    r_contracts_reviews_title text,
+    r_contracts_reviews_body text, 
+    r_contracts_id_fkey bigint NOT NULL,
+  
+    CONSTRAINT bikes_rentals_reviews__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
+        REFERENCES public.rental_contracts(rental_contracts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+   
+)
+WITH (OIDS = FALSE)
+TABLESPACE pg_default;
+ALTER TABLE public.bikes_rentals_reviews OWNER to postgres;
+
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO shan;
+
+
+-- table: rentals_reviews_stars
+--
+CREATE TABLE public.bikes_rentals_stars
+(-- column tetris complete 
+    rentals_reviews_stars_id BIGSERIAL PRIMARY KEY,
+    r_contracts_id_fkey bigint NOT NULL,
+    bikes_rentals_stars  smallint NOT NULL,
+    CONSTRAINT rental_reviews_stars__r_contracts_id_fkey FOREIGN KEY (r_contracts_id_fkey)
+        REFERENCES public.rental_contracts (rental_contracts_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (OIDS = FALSE)
+TABLESPACE pg_default;
+ALTER TABLE public.bikes_rentals_stars OWNER to postgres;
+
+GRANT ALL ON TABLE public.bikes_rentals_stars TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO shan;
+
+-- Table: Stores Rentals Reviews
+CREATE TABLE public.stores_reviews
+(-- column tetris complete 
+    stores_reviews_id BIGSERIAL PRIMARY KEY,
+    stores_reviews_title text,
+    stores_reviews_body text,
+    stores_id_fkey bigint NOT NULL,
+    bikes_rentals_id_fkey bigint NOT NULL,
 
     
+  
+    CONSTRAINT stores_reviews__stores_id_fkey FOREIGN KEY (stores_id_fkey)
+        REFERENCES public.stores(stores_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+    CONSTRAINT stores_reviews__bikes_rentals_id_fkey FOREIGN KEY (bikes_rentals_id_fkey)
+        REFERENCES public.bikes_rentals(bikes_rentals_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+   
+)
+WITH (OIDS = FALSE)
+TABLESPACE pg_default;
+ALTER TABLE public.bikes_rentals_reviews OWNER to postgres;
+
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_reviews TO shan;
+
+
+-- stores_stars
+CREATE TABLE public.stores_stars
+(-- column tetris complete 
+    stores_stars_id BIGSERIAL PRIMARY KEY,
+    bikes_rentals_id_fkey bigint NOT NULL,
+    stores_id_fkey bigint NOT NULL,
+    bikes_rentals_stars  smallint NOT NULL,
+    CONSTRAINT stores_stars__bikes_rentals_id_fkey FOREIGN KEY (bikes_rentals_id_fkey)
+        REFERENCES public.bikes_rentals (bikes_rentals_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+    CONSTRAINT stores_stars__stores_id_fkey FOREIGN KEY (stores_id_fkey)
+        REFERENCES public.stores (stores_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (OIDS = FALSE)
+TABLESPACE pg_default;
+ALTER TABLE public.bikes_rentals_stars OWNER to postgres;
+
+GRANT ALL ON TABLE public.bikes_rentals_stars TO aaron;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO postgres;
+GRANT ALL ON TABLE public.bikes_rentals_stars TO shan;
